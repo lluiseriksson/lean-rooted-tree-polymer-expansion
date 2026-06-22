@@ -1,0 +1,5 @@
+- Machine-checked target-preserving second-Ursell leaf summation with holes.
+- Normalized rooted child-factorial tree entropy bounded explicitly by 4^n.
+- Parent-metric normalization converts local incompatibility moments into a tree-walk budget.
+- Exact target decay is extracted before the target fiber is enlarged to a rooted overcount.
+- Reproducible Lean 4 artifact with pinned upstream, Mathlib, CI, and axiom oracle.

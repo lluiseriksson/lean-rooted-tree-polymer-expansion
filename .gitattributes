@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.zip binary
+
+# Keep generated release archives compact.
+/release export-ignore
+/.lake export-ignore
+/.gitignore export-ignore

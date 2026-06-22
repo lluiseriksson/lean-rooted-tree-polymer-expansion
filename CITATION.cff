@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite the paper and the archived software release."
+title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
+version: 1.0.0
+date-released: 2026-06-22
+authors:
+  - family-names: Eriksson
+    given-names: Lluis
+license: AGPL-3.0-or-later
+repository-code: "https://github.com/lluiseriksson/marked-rooted-closure"
+keywords:
+  - Lean 4
+  - cluster expansion
+  - polymer model
+  - rooted tree
+  - Ursell function
+  - renormalization group
+  - constructive quantum field theory
+preferred-citation:
+  type: article
+  title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
+  authors:
+    - family-names: Eriksson
+      given-names: Lluis
+  year: 2026

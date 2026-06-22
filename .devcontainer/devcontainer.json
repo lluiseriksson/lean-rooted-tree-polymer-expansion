@@ -1,0 +1,14 @@
+{
+  "name": "marked-rooted-closure",
+  "build": {"dockerfile": "../Dockerfile", "context": ".."},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "leanprover.lean4",
+        "james-yu.latex-workshop"
+      ]
+    }
+  },
+  "postCreateCommand": "lake update",
+  "remoteUser": "root"
+}

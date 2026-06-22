@@ -1,0 +1,19 @@
+/-
+Verbatim theorem statement excerpt from the pinned upstream file
+YangMills/KP/RootedLeafSummation.lean
+blob: 1415686403c26536da8736a9021237773c7467dc
+commit: 83d18a113e3fa22ada23b13361fb84015a1c80ed
+
+This file is provenance material only; the compiled dependency is fetched by
+Lake at the exact pinned commit.
+-/
+
+theorem rootedChildCount_factorialTreeSum_normalized_le_four_pow
+    (n : ℕ) :
+    ((n : ℝ) + 1) *
+        (((n + 1).factorial : ℝ))⁻¹ *
+        (∑ T ∈ spanningTrees (⊤ : SimpleGraph (Fin (n + 1))),
+          ∏ v : Fin (n + 1), ((rootedChildCount T v).factorial : ℝ))
+      ≤ (4 : ℝ) ^ n := by
+  -- Proof body is in the pinned upstream source.
+  ...

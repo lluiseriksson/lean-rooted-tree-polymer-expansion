@@ -1,0 +1,24 @@
+{
+  "title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
+  "upload_type": "software",
+  "publication_date": "2026-06-22",
+  "description": "Publication bundle containing a paper, Lean 4 companion, theorem map, and reproducibility scripts for target-preserving rooted-tree leaf summation in polymer cluster expansions with holes.",
+  "creators": [
+    {"name": "Eriksson, Lluis"}
+  ],
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "Lean 4",
+    "cluster expansion",
+    "polymer model",
+    "rooted tree",
+    "constructive quantum field theory"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME/tree/83d18a113e3fa22ada23b13361fb84015a1c80ed",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

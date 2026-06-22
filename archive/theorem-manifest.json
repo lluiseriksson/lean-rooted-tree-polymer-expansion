@@ -1,0 +1,27 @@
+{
+  "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes",
+  "version": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME",
+    "commit": "83d18a113e3fa22ada23b13361fb84015a1c80ed",
+    "lean": "leanprover/lean4:v4.29.0-rc6",
+    "mathlib": "07642720480157414db592fa85b626dafb71355b"
+  },
+  "endpoints": [
+    {
+      "public_name": "normalizedRootedChildFactorialTreeBound",
+      "upstream_name": "YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow",
+      "source": "YangMills/KP/RootedLeafSummation.lean"
+    },
+    {
+      "public_name": "markedRootLeafGeometricBound",
+      "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight",
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean"
+    },
+    {
+      "public_name": "targetPreservingWeightedTreeBound",
+      "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation",
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean"
+    }
+  ]
+}

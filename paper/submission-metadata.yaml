@@ -1,0 +1,24 @@
+title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
+author: "Lluis Eriksson"
+date: "2026-06-22"
+article_type: "Formalization / rigorous mathematical physics"
+keywords:
+  - Lean 4
+  - cluster expansion
+  - polymer model
+  - rooted tree
+  - Ursell function
+  - renormalization group
+  - constructive quantum field theory
+classification_suggestions:
+  msc2020:
+    - "82B28"
+    - "68V15"
+    - "81T17"
+    - "05C05"
+  arxiv:
+    - "math-ph"
+    - "cs.LO"
+    - "math.CO"
+conflicts_of_interest: "None declared."
+data_availability: "All source, proof wrappers, lock files, and build scripts are included in the artifact repository."

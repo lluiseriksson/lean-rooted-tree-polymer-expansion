@@ -1,0 +1,74 @@
+/-
+Verbatim theorem statement excerpts from the pinned upstream file
+YangMills/RG/AppendixFSecondUrsellLeafSummation.lean
+blob: 0307d11b95d4385d4ea39067290e7eec929cd7f6
+commit: 83d18a113e3fa22ada23b13361fb84015a1c80ed
+
+This file is provenance material only; the compiled dependency is fetched by
+Lake at the exact pinned commit.
+-/
+
+theorem appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight
+    {d L : ℕ} [NeZero L]
+    (HF : HoleFamily d L)
+    (zK : Finset (Cube d L) → ℂ)
+    (w : OmegaPolymerType HF zK → ℝ)
+    (r : Cube d L)
+    (n : ℕ)
+    (κ₀ : ℝ)
+    (hκ₀ : 0 < κ₀)
+    (hw : ∀ Q : OmegaPolymerType HF zK, 0 ≤ w Q)
+    (hw_exp :
+      ∀ Q : OmegaPolymerType HF zK,
+        w Q ≤ appendixFHoleExpWeight HF (2 * κ₀) Q.val)
+    (hdisj :
+      ∀ H₁ ∈ HF.holes, ∀ H₂ ∈ HF.holes,
+        H₁ ≠ H₂ → Disjoint H₁ H₂)
+    (hnoedges : noEdgesBetweenHoles (cubeAdj d L) HF.holes)
+    (hholes_ne : ∀ H₀ ∈ HF.holes, H₀.Nonempty)
+    (hCq :
+      ((3 ^ d : ℕ) : ℝ) ^ 2 *
+          (Real.exp (-κ₀) * 2 ^ (3 ^ d + 1)) < 1) :
+    ((n : ℝ) + 1) *
+        appendixFHoleHsharpWeightedTreeMarkedRootSum HF zK w r n
+      ≤
+    appendixFSecondUrsellMomentConstant d κ₀ *
+      appendixFSecondUrsellLeafConstant d κ₀ ^ n := by
+  -- Proof body is in the pinned upstream source.
+  ...
+
+
+theorem appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation
+    {d L : ℕ} [NeZero L]
+    (HF : HoleFamily d L)
+    (zK : Finset (Cube d L) → ℂ)
+    (w u : OmegaPolymerType HF zK → ℝ)
+    (Y : Finset (Cube d L))
+    (r : Cube d L)
+    (n : ℕ)
+    (rate κ₀ : ℝ)
+    (hrate : 0 ≤ rate)
+    (hw : ∀ Q : OmegaPolymerType HF zK, 0 ≤ w Q)
+    (hu : ∀ Q : OmegaPolymerType HF zK, 0 ≤ u Q)
+    (hsplit :
+      ∀ Q : OmegaPolymerType HF zK,
+        w Q ≤ appendixFHoleExpWeight HF rate Q.val * u Q)
+    (hu_exp :
+      ∀ Q : OmegaPolymerType HF zK,
+        u Q ≤ appendixFHoleExpWeight HF (2 * κ₀) Q.val)
+    (hr : r ∈ skeleton HF Y)
+    (hκ₀ : 0 < κ₀)
+    (hdisj :
+      ∀ H₁ ∈ HF.holes, ∀ H₂ ∈ HF.holes,
+        H₁ ≠ H₂ → Disjoint H₁ H₂)
+    (hnoedges : noEdgesBetweenHoles (cubeAdj d L) HF.holes)
+    (hholes_ne : ∀ H₀ ∈ HF.holes, H₀.Nonempty)
+    (hCq :
+      ((3 ^ d : ℕ) : ℝ) ^ 2 *
+          (Real.exp (-κ₀) * 2 ^ (3 ^ d + 1)) < 1) :
+    appendixFHoleHsharpWeightedTreeTerm HF zK w Y n ≤
+      appendixFSecondUrsellMomentConstant d κ₀ *
+        appendixFHoleExpWeight HF rate Y *
+        appendixFSecondUrsellLeafConstant d κ₀ ^ n := by
+  -- Proof body is in the pinned upstream source.
+  ...
