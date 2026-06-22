@@ -1,6 +1,6 @@
 {
-  "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes",
-  "version": "2.0.0",
+  "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
+  "version": "2.1.0",
   "publication_model": "integrated-documentation",
   "upstream": {
     "repository": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME",
@@ -37,5 +37,10 @@
     "proves_hRpoly": false,
     "proves_continuum_limit": false,
     "proves_mass_gap": false
+  },
+  "repository": {
+    "url": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion",
+    "site": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/",
+    "slug": "marked-rooted-closure"
   }
 }

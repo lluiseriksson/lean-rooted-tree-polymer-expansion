@@ -10,12 +10,19 @@ permissions:
   id-token: write
   attestations: write
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+  PYTHONUNBUFFERED: '1'
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -25,22 +32,40 @@ jobs:
         with:
           use-github-cache: true
       - name: Install documentation dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements-docs.txt
-      - name: Verify and package
+        run: python -m pip install -r requirements-docs.txt
+      - name: Verify tag matches project version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          python - <<'PY'
+          import json, os
+          version = json.load(open('project.json'))['version']
+          tag = os.environ['GITHUB_REF_NAME']
+          if tag != f'v{version}':
+              raise SystemExit(f'tag {tag!r} does not match project version v{version}')
+          PY
+      - name: Verify and package twice
         run: make release
       - name: Attest source archive provenance
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: release/*.zip
+      - name: Attest SBOM provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: release/*.spdx.json
       - uses: actions/upload-artifact@v4
         with:
           name: source-release
           path: |
             release/*.zip
             release/*.sha256
+            release/*.spdx.json
           if-no-files-found: error
       - name: Publish tagged GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" release/*.zip release/*.sha256 --verify-tag --generate-notes
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            release/*.zip release/*.sha256 release/*.spdx.json \
+            --verify-tag --generate-notes

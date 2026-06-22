@@ -1,0 +1,40 @@
+/* Browser-print rendering for the integrated article; no separate PDF source. */
+@media print {
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-footer,
+  .md-content__button,
+  .md-source,
+  .md-search,
+  .md-button {
+    display: none !important;
+  }
+
+  .md-main__inner,
+  .md-content,
+  .md-content__inner {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  body {
+    font-size: 10.5pt;
+    line-height: 1.42;
+  }
+
+  h1, h2, h3 {
+    break-after: avoid;
+  }
+
+  pre, table, img, .arithmatex {
+    break-inside: avoid;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 80%;
+    overflow-wrap: anywhere;
+  }
+}

@@ -2,6 +2,31 @@
 
 All notable changes to this publication artifact are recorded here.
 
+## 2.1.0 - 2026-06-22
+
+### Preserved
+
+- The three public Lean theorem statements and their upstream proof revision.
+- The integrated-documentation publication model and explicit claims boundary.
+
+### Improved
+
+- Added the authoritative `lake-manifest.json` to the distributable source tree.
+- Removed `lake update` from ordinary verification; dependency refresh is now
+  an explicit maintenance target.
+- Rebranded the documentation site as **Lean Rooted-Tree Polymer Expansion**
+  while keeping the stable Lean namespace.
+- Added a migration-safe proposal to rename the repository to
+  `lean-rooted-tree-polymer-expansion`.
+- Added project-identity, Lake-lock, paper-manifest, oracle-log, and release
+  determinism audits.
+- Added a generated continuous article derived from the same canonical Markdown
+  sections, plus browser-print styling.
+- Added an SPDX 2.3 JSON SBOM and checksum to release packaging.
+- Reworked the landing page, formalization map, claims page, notation guide,
+  release playbook, agent handoff, and submission checklist.
+- Updated static checks so the release ZIP cannot omit the dependency manifest.
+
 ## 2.0.0 - 2026-06-22
 
 ### Changed

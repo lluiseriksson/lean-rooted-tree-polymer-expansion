@@ -2,51 +2,61 @@
 
 ## Mission
 
-Replace the existing repository contents with this v2.0.0 tree, run the complete
-verification workflow, deploy the integrated paper through GitHub Pages, and
+Replace the repository contents with the v2.1.0 tree, run the complete
+verification workflow, deploy the integrated article through GitHub Pages, and
 publish an immutable source release without broadening the mathematical claims.
 
-## Important migration
+## Safe installation
 
-The previous repository tracked a standalone manuscript PDF, duplicate LaTeX sources, and nested
-release artifacts. Version 2.0.0 intentionally removes them. The article now
-lives under `docs/paper/` and is built by MkDocs. Use a **delete-aware** copy so
-legacy files do not survive.
-
-Recommended command from a clean clone:
+From a clean clone of the current repository:
 
 ```bash
 rsync -a --delete --exclude='.git/' \
-  /path/to/marked-rooted-closure-v2.0.0/ ./
-git add -A
-git commit -m "docs: integrate paper and harden publication artifact"
-git push origin main
+  /path/to/lean-rooted-tree-polymer-expansion-v2.1.0/ ./
+make static
+git status --short
 ```
 
-## Non-negotiable claims discipline
+Then commit and push the complete replacement. The delete-aware copy prevents
+legacy standalone paper or nested release artifacts from reappearing.
 
-The headline result is finite and orderwise. Do not advertise it as a proof of
-`hRpoly`, the Yang--Mills mass gap, a continuum limit, or a new theory of
-cardinal infinity. Do not replace “to the best of our knowledge” by an
-unconditional novelty claim.
+## Verification gate
 
-## Publication gate
+A release is blocked until all of the following hold:
 
-1. Clean-cache Lean CI is green.
-2. The oracle shows only expected classical axioms.
-3. Strict docs build is green.
-4. Internal-link and artifact audits pass.
-5. The deployed Pages site has been visually checked.
-6. The release ZIP hash is recorded.
-7. The DOI, if any, is inserted consistently.
-8. A fresh literature search has been completed.
+1. `make static` succeeds.
+2. `make docs` succeeds in strict mode.
+3. the clean-cache Lean CI job succeeds;
+4. the oracle output contains no `sorryAx` or project-local axiom;
+5. the deployed Pages site has been checked on desktop and mobile;
+6. the deterministic ZIP, checksum, and SPDX SBOM have been verified;
+7. the final commit and workflow URLs have been recorded;
+8. any DOI has been added only after it is minted.
 
-## Files whose consistency must be preserved
+## Claims discipline
 
+The result is finite and orderwise. Do not advertise it as a proof of
+`hRpoly`, a raw Yang--Mills activity estimate, a continuum construction, or a
+mass gap. Do not turn qualified novelty language into an unconditional priority
+claim without a fresh literature review.
+
+## Optional repository rename
+
+The recommended slug is `lean-rooted-tree-polymer-expansion`. Apply the rename
+only after the v2.1.0 tree is green under the current name. Follow
+[the dedicated rename checklist](rename-repository.md), then run the included
+metadata migration script. The Lean namespace remains unchanged.
+
+## Release-critical files
+
+- `project.json`
 - `lakefile.lean`
+- `lake-manifest.json`
 - `lean-toolchain`
 - `archive/UPSTREAM.lock`
 - `archive/theorem-manifest.json`
 - `MarkedRootedClosure/PaperTheorems.lean`
+- `MarkedRootedClosure/Oracle.lean`
+- `docs/paper/manifest.json`
 - `docs/artifact/theorem-map.md`
-- the claims-boundary language throughout the paper
+- the claims-boundary language throughout the site

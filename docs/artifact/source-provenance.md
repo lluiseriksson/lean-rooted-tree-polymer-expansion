@@ -11,9 +11,9 @@
 | Mathlib commit | `07642720480157414db592fa85b626dafb71355b` |
 
 The authoritative machine-readable records are
-[`archive/UPSTREAM.lock`](https://github.com/lluiseriksson/marked-rooted-closure/blob/main/archive/UPSTREAM.lock)
+[`archive/UPSTREAM.lock`](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/blob/main/archive/UPSTREAM.lock)
 and
-[`archive/theorem-manifest.json`](https://github.com/lluiseriksson/marked-rooted-closure/blob/main/archive/theorem-manifest.json).
+[`archive/theorem-manifest.json`](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/blob/main/archive/theorem-manifest.json).
 
 ## Verification route
 

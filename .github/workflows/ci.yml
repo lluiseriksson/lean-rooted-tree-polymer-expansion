@@ -13,20 +13,26 @@ concurrency:
   group: verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+  PYTHONUNBUFFERED: '1'
+
 jobs:
   static-and-docs:
-    name: Static audit and documentation
+    name: Static audit and strict documentation
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: requirements-docs.txt
       - name: Install documentation dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements-docs.txt
+        run: python -m pip install -r requirements-docs.txt
       - name: Run static audit
         run: make static
       - name: Build documentation in strict mode
@@ -38,14 +44,46 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  lean:
-    name: Lean kernel verification
+  package:
+    name: Deterministic source package and SBOM
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    needs: static-and-docs
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+      - name: Install documentation dependencies
+        run: python -m pip install -r requirements-docs.txt
+      - name: Build and verify deterministic package
+        run: make package-determinism
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-package-preview
+          path: |
+            release/*.zip
+            release/*.sha256
+            release/*.spdx.json
+          if-no-files-found: error
+          retention-days: 14
+
+  lean:
+    name: Lean kernel and oracle verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: leanprover/lean-action@v1
         with:
           use-github-cache: true
-      - name: Build companion and print axioms
+      - name: Build companion and audit oracle output
         run: make lean
+      - name: Confirm dependency manifest is unchanged
+        run: git diff --exit-code -- lake-manifest.json

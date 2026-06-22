@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "version": "2.1.0",
+  "release_date": "2026-06-22",
+  "artifact_title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
+  "site_name": "Lean Rooted-Tree Polymer Expansion",
+  "site_tagline": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes",
+  "repository_owner": "lluiseriksson",
+  "repository_slug": "lean-rooted-tree-polymer-expansion",
+  "recommended_repository_slug": "lean-rooted-tree-polymer-expansion",
+  "lean_package": "MarkedRootedClosure",
+  "upstream_repository": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME",
+  "upstream_commit": "4e45246aa109671d25fcd01ba1abf7bc3f8506d1",
+  "lean_toolchain": "leanprover/lean4:v4.29.0-rc6",
+  "mathlib_commit": "07642720480157414db592fa85b626dafb71355b",
+  "publication_model": "integrated-documentation",
+  "paper_entrypoint": "docs/paper/index.md",
+  "rename_status": "adopted",
+  "previous_repository_slug": "marked-rooted-closure"
+}

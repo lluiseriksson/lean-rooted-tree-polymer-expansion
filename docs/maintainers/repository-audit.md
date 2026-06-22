@@ -1,24 +1,37 @@
-# Repository audit and migration decision
+# Repository audit for v2.1.0
 
 **Audit date:** 2026-06-22  
-**Remote:** `lluiseriksson/marked-rooted-closure`
+**Current remote:** `lluiseriksson/lean-rooted-tree-polymer-expansion`  
+**Audited base release:** v2.0.0 documentation-integrated tree
 
-## Verification of the existing repository
+## Base state confirmed
 
-The remote README was inspected through the GitHub connector and matches the
-v1.0.0 delivery at the level of repository structure and publication content.
-It identifies the repository as a bundle containing:
+The public repository exposes the integrated article, three stable Lean theorem
+aliases, exact source locks, CI, GitHub Pages deployment, evaluator material,
+and deterministic release tooling. The standalone PDF/LaTeX publication model
+has already been removed.
 
-- the manuscript and graphical abstract;
-- the Lean 4 companion and its three public theorem endpoints;
-- the exact upstream source lock;
-- CI and artifact checks;
-- citation and submission metadata;
-- reviewer and publishing-agent documentation;
-- preserved copies of the originally supplied release artifacts.
+## Gaps addressed by v2.1.0
 
-The three endpoint names shown remotely are the same ones in the supplied
-v1.0.0 archive:
+1. The previously supplied v2.0.0 ZIP omitted `lake-manifest.json`, although the
+   live repository tracked it. The new release archive requires and verifies
+   that file.
+2. Ordinary verification ran `lake update`, which could rewrite the committed
+   dependency graph. Verification now consumes the manifest; lock refresh is a
+   separate target.
+3. The site name and repository slug did not explain the mathematical domain to
+   a new reader. The site is now branded **Lean Rooted-Tree Polymer Expansion**,
+   and a migration-safe descriptive slug is proposed.
+4. The sectional article lacked a one-page reading view. A generated continuous
+   view now derives from the same canonical sources.
+5. Identity, paper order, Lake pins, oracle logs, and release determinism were
+   not independently checked. Dedicated audits now cover each layer.
+6. Release metadata did not include a software bill of materials. Packaging now
+   emits SPDX 2.3 JSON and a checksum.
+7. Maintainer guidance still described the pre-v2 migration as current work.
+   The handoff and release playbook now describe the actual live state.
+
+## Preserved mathematical interface
 
 ```text
 MarkedRootedClosure.normalizedRootedChildFactorialTreeBound
@@ -26,32 +39,11 @@ MarkedRootedClosure.markedRootLeafGeometricBound
 MarkedRootedClosure.targetPreservingWeightedTreeBound
 ```
 
-This is a **structural/content audit**, not a byte-for-byte cryptographic audit
-of every remote binary. The original local v1.0.0 ZIP and its SHA-256 sidecar
-remain the authoritative byte-level record of the delivery.
+No theorem statement or upstream proof revision is changed by this hardening
+release.
 
-## Why the remote still needs replacement
+## Remaining external gates
 
-The remote is organized around a separately tracked manuscript binary and a
-second LaTeX manuscript source. It also preserves nested copies of previous
-release artifacts. That arrangement conflicts with the current requirement:
-the article must live in the repository documentation and must not be uploaded
-as an independent paper file.
-
-## Decision for v2.0.0
-
-Version 2.0.0 therefore:
-
-- preserves the three Lean theorem claims and wrapper interface;
-- updates the immutable upstream pin to the current verified theorem-bearing
-  commit;
-- migrates the complete article to `docs/paper/`;
-- adds a strict MkDocs build and GitHub Pages deployment;
-- removes standalone manuscript binaries and duplicated LaTeX sources;
-- removes nested copies of old ZIP and manuscript artifacts;
-- adds delete-aware migration instructions;
-- expands CI, release, security, governance, metadata, and link checks;
-- produces a deterministic source-only archive with a SHA-256 sidecar.
-
-The v2 tree must replace the repository with deletion enabled. Copying it as a
-simple overlay would leave the legacy publication model in place.
+A package assembled outside a Lean-enabled, networked environment cannot by
+itself certify a fresh kernel rebuild or GitHub Pages deployment. Those gates
+remain explicit CI requirements before tagging.

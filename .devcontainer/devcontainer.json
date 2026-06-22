@@ -1,5 +1,5 @@
 {
-  "name": "marked-rooted-closure",
+  "name": "lean-rooted-tree-polymer-expansion",
   "build": {"dockerfile": "../Dockerfile", "context": ".."},
   "customizations": {
     "vscode": {
@@ -10,6 +10,6 @@
       ]
     }
   },
-  "postCreateCommand": "lake update",
+  "postCreateCommand": "bash scripts/bootstrap_repository.sh",
   "remoteUser": "root"
 }
