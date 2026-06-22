@@ -1,27 +1,41 @@
 {
   "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "publication_model": "integrated-documentation",
   "upstream": {
     "repository": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME",
-    "commit": "83d18a113e3fa22ada23b13361fb84015a1c80ed",
+    "commit": "4e45246aa109671d25fcd01ba1abf7bc3f8506d1",
+    "commit_message": "feat(RG): characterize flat harmonic kernel",
     "lean": "leanprover/lean4:v4.29.0-rc6",
     "mathlib": "07642720480157414db592fa85b626dafb71355b"
   },
   "endpoints": [
     {
       "public_name": "normalizedRootedChildFactorialTreeBound",
+      "qualified_public_name": "MarkedRootedClosure.normalizedRootedChildFactorialTreeBound",
       "upstream_name": "YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow",
-      "source": "YangMills/KP/RootedLeafSummation.lean"
+      "source": "YangMills/KP/RootedLeafSummation.lean",
+      "paper_page": "docs/paper/03-rooted-tree-profile.md"
     },
     {
       "public_name": "markedRootLeafGeometricBound",
+      "qualified_public_name": "MarkedRootedClosure.markedRootLeafGeometricBound",
       "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight",
-      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean"
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
+      "paper_page": "docs/paper/06-marked-root-closure.md"
     },
     {
       "public_name": "targetPreservingWeightedTreeBound",
+      "qualified_public_name": "MarkedRootedClosure.targetPreservingWeightedTreeBound",
       "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation",
-      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean"
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
+      "paper_page": "docs/paper/07-target-preserving-decay.md"
     }
-  ]
+  ],
+  "claim_boundary": {
+    "proves_model_specific_raw_yang_mills_activity": false,
+    "proves_hRpoly": false,
+    "proves_continuum_limit": false,
+    "proves_mass_gap": false
+  }
 }

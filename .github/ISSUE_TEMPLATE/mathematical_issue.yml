@@ -1,0 +1,25 @@
+name: Mathematical issue
+description: Report a statement, proof-map, constant, or claims-boundary concern.
+title: "[math] "
+labels: [mathematics]
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Exact location
+      description: Theorem name, file, section, formula, or source line.
+    validations:
+      required: true
+  - type: textarea
+    id: concern
+    attributes:
+      label: Concern
+      description: State the issue and distinguish a formal error from an interpretive concern.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting calculation or source
+    validations:
+      required: false

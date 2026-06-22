@@ -2,7 +2,7 @@
 
 These excerpts reproduce only the publication-facing theorem statements from
 `THE-ERIKSSON-PROGRAMME` at commit
-`83d18a113e3fa22ada23b13361fb84015a1c80ed`.
+`4e45246aa109671d25fcd01ba1abf7bc3f8506d1`.
 
 They are included for offline provenance review. They are not compiled and do
 not replace the full upstream proof dependency, which Lake fetches at the exact

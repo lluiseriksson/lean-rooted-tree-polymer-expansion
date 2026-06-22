@@ -5,7 +5,8 @@
     "vscode": {
       "extensions": [
         "leanprover.lean4",
-        "james-yu.latex-workshop"
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint"
       ]
     }
   },

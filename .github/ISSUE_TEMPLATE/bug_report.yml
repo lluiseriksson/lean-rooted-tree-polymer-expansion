@@ -1,0 +1,29 @@
+name: Build or artifact bug
+description: Report a reproducibility, CI, documentation, or packaging failure.
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please do not report sensitive security issues publicly; see SECURITY.md.
+  - type: input
+    id: revision
+    attributes:
+      label: Repository revision
+      placeholder: full commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: Include the exact command and the smallest relevant log.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, Lean/elan, Python, and whether the cache was clean.
+    validations:
+      required: true

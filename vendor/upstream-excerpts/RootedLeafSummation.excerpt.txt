@@ -1,8 +1,7 @@
 /-
 Verbatim theorem statement excerpt from the pinned upstream file
 YangMills/KP/RootedLeafSummation.lean
-blob: 1415686403c26536da8736a9021237773c7467dc
-commit: 83d18a113e3fa22ada23b13361fb84015a1c80ed
+commit: 4e45246aa109671d25fcd01ba1abf7bc3f8506d1
 
 This file is provenance material only; the compiled dependency is fetched by
 Lake at the exact pinned commit.

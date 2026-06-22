@@ -1,23 +1,28 @@
 # Marked Rooted-Tree Summation for Polymer Expansions with Holes
 
+[![Lean CI](https://github.com/lluiseriksson/marked-rooted-closure/actions/workflows/ci.yml/badge.svg)](https://github.com/lluiseriksson/marked-rooted-closure/actions/workflows/ci.yml)
+[![Documentation](https://github.com/lluiseriksson/marked-rooted-closure/actions/workflows/pages.yml/badge.svg)](https://lluiseriksson.github.io/marked-rooted-closure/)
 [![Lean](https://img.shields.io/badge/Lean-4.29.0--rc6-blue)](lean-toolchain)
-[![Source](https://img.shields.io/badge/source-pinned-success)](archive/UPSTREAM.lock)
-[![Paper](https://img.shields.io/badge/paper-PDF-b31b1b)](paper/main.pdf)
+[![Source pinned](https://img.shields.io/badge/upstream-pinned-success)](archive/UPSTREAM.lock)
 [![License: AGPL v3+](https://img.shields.io/badge/code-AGPL--3.0--or--later-blue)](LICENSE)
 
-This repository is a publication bundle: manuscript, Lean 4 companion, exact
-source locks, theorem map, CI, artifact checks, citation metadata, graphical
-abstract, and submission handoff.
+This repository is a documentation-integrated publication artifact: the paper,
+Lean 4 companion, theorem map, source provenance, CI, evaluation guide, and
+release tooling are maintained in one versioned tree.
 
-![Proof pipeline](paper/graphical-abstract.png)
+[**Read the integrated paper**](https://lluiseriksson.github.io/marked-rooted-closure/paper/)
 
-The mathematical result is a **finite, target-preserving rooted-tree
-leaf-summation theorem** for a second Ursell expansion with holes. It keeps the
-exact target union until modified-metric decay has been extracted, marks a root
-in the active skeleton, performs a parent-normalized bottom-up moment recursion,
-and closes tree-shape entropy by a normalized `4^n` bound.
+![Proof pipeline](docs/assets/images/proof-pipeline.png)
 
-The three publication-facing Lean endpoints are:
+## Mathematical result
+
+The artifact formalizes a finite, target-preserving rooted-tree leaf-summation
+mechanism for a second Ursell expansion with holes. It keeps the exact target
+union until modified-metric decay has been extracted, marks a root in the
+active skeleton, performs a parent-normalized bottom-up moment recursion, and
+closes tree-shape entropy by a normalized `4^n` bound.
+
+The stable publication-facing Lean endpoints are:
 
 ```lean
 MarkedRootedClosure.normalizedRootedChildFactorialTreeBound
@@ -25,104 +30,83 @@ MarkedRootedClosure.markedRootLeafGeometricBound
 MarkedRootedClosure.targetPreservingWeightedTreeBound
 ```
 
-They re-export machine-checked proofs from `THE-ERIKSSON-PROGRAMME` at the exact
-commit recorded in [`archive/UPSTREAM.lock`](archive/UPSTREAM.lock). Lean,
-Mathlib, upstream source files, and Git blobs are pinned.
+For rooted child counts `c_T(v)`, the core formulas are
 
-## Main formulas
+$$
+\frac{n+1}{(n+1)!}\sum_T\prod_v c_T(v)!\le 4^n,
+$$
 
-For complete-graph spanning trees on `n+1` labelled vertices, rooted at `0`,
-with `c_T(v)` children at vertex `v`, the formalized bound is
+$$
+(n+1)S_n(r)\le M(4M^2)^n,
+$$
 
-\[
-\frac{n+1}{(n+1)!}
-\sum_T \prod_v c_T(v)! \le 4^n.
-\]
+and
 
-Let `M` be the rooted/incompatible metric-moment constant and `L = 4 M^2`. The
-marked-root leaf sum satisfies
+$$
+T_n(Y)\le M e^{-\rho m(Y)}(4M^2)^n.
+$$
 
-\[
-(n+1)S_n(r) \le M L^n.
-\]
+## Paper-as-documentation
 
-After extracting target decay before forgetting the exact union,
+There is no separately tracked manuscript PDF. The article begins at
+[`docs/paper/index.md`](docs/paper/index.md) and is rendered as the GitHub Pages
+site configured by [`mkdocs.yml`](mkdocs.yml). This prevents drift between the
+paper, theorem map, and artifact documentation.
 
-\[
-T_n(Y) \le M\,e^{-\rho m(Y)}L^n.
-\]
+## Verify
 
-Consequently, whenever an activity contributes `epsilon^(n+1)` and
-`L epsilon < 1`, the order sum is bounded by
-
-\[
-\frac{M\epsilon}{1-L\epsilon}\,e^{-\rho m(Y)}.
-\]
-
-The last formula is the geometric-series corollary of the finite orderwise Lean
-endpoints.
-
-## Build
-
-Requirements: Git, a POSIX shell, and `elan`/Lean. No global Mathlib install is
-required.
+Requirements: Git, a POSIX shell, Python 3 with `venv`, and `elan`/Lean.
+`make docs-setup` creates an isolated documentation environment. The first Lean
+build fetches the exact pinned upstream project and Mathlib revision.
 
 ```bash
-make lean
-make paper
-make audit
+make docs-setup
+make verify
 ```
 
-Or run everything:
+Individual targets:
 
 ```bash
-make all
+make lean       # compile wrappers and run axiom oracle
+make docs       # strict MkDocs build
+make static     # metadata, links, locks, placeholders
+make package    # docs/static checks + deterministic ZIP
+make release    # Lean verification + package
 ```
 
-The first Lean build fetches the exact pinned upstream project and its pinned
-Mathlib commit. See [`docs/BUILD_STATUS.md`](docs/BUILD_STATUS.md) for the
-assembly-environment verification record.
+See [reproducibility](docs/artifact/reproducibility.md) and the
+[artifact evaluation guide](docs/artifact/evaluation.md).
 
-## Paper and submission bundle
+## Immutable proof source
 
-- [Manuscript PDF](paper/main.pdf)
-- [LaTeX source](paper/main.tex)
-- [Graphical abstract](paper/graphical-abstract-final.pdf)
-- [Cover letter](paper/cover-letter.md)
-- [ArXiv abstract](paper/arxiv-abstract.txt)
-- [Submission metadata](paper/submission-metadata.yaml)
-- [Original release artifacts](release-artifacts/README.md)
+- Upstream: `lluiseriksson/THE-ERIKSSON-PROGRAMME`
+- Commit: `4e45246aa109671d25fcd01ba1abf7bc3f8506d1`
+- Lean: `leanprover/lean4:v4.29.0-rc6`
+- Mathlib: `07642720480157414db592fa85b626dafb71355b`
+
+The machine-readable lock is [`archive/UPSTREAM.lock`](archive/UPSTREAM.lock).
 
 ## Scope
 
-This artifact proves finite combinatorics and its target-sensitive geometric
-composition. It does **not** prove the model-specific raw Yang-Mills activity
-bound, `hRpoly`, a continuum limit, Osterwalder-Schrader reconstruction, or a
-continuum mass gap. See [`docs/NOVELTY_AND_SCOPE.md`](docs/NOVELTY_AND_SCOPE.md).
+This artifact proves finite combinatorics and target-sensitive geometric
+composition. It does **not** prove the model-specific raw Yang--Mills activity
+bound, `hRpoly`, a continuum limit, Osterwalder--Schrader reconstruction, or a
+continuum mass gap. See [Novelty and scope](docs/artifact/scope.md).
 
-## Review map
+## Uploading this v2 tree
 
-- [Reproducibility](docs/REPRODUCIBILITY.md)
-- [Source provenance](docs/SOURCE_PROVENANCE.md)
-- [Theorem map](docs/THEOREM_MAP.md)
-- [Artifact evaluation](docs/ARTIFACT_EVALUATION.md)
-- [Publishing-agent handoff](docs/AGENT_HANDOFF.md)
-- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
+The existing GitHub repository contains the previous PDF-based bundle. Upload
+this version with a delete-aware copy so legacy `paper/` and
+`release-artifacts/` directories are removed. See
+[upload and migration instructions](docs/maintainers/upload-and-migration.md).
 
-## Release
+## Citation
 
-```bash
-make release
-```
-
-This rebuilds the paper, runs the static artifact audit, and produces a clean
-versioned ZIP plus SHA-256 file in `release/`.
-
-The externally supplied ZIP, SHA-256 sidecar, and PDF copy used to assemble this
-repository are preserved under [`release-artifacts/`](release-artifacts/).
+Use [`CITATION.cff`](CITATION.cff) or [`CITATION.bib`](CITATION.bib). Add an
+archive DOI only after the verified release has been deposited.
 
 ## License
 
-The Lean companion is AGPL-3.0-or-later, matching the pinned upstream project.
-The manuscript licensing decision is documented separately in
-[`paper/LICENSE.md`](paper/LICENSE.md) for the publishing agent.
+Lean code and repository tooling are distributed under
+AGPL-3.0-or-later. The integrated scholarly documentation remains copyright
+Lluis Eriksson; see [`docs/LICENSE.md`](docs/LICENSE.md).

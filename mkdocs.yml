@@ -1,0 +1,122 @@
+site_name: Marked Rooted-Tree Closure
+site_description: Machine-checked target-preserving leaf summation for polymer cluster expansions with holes
+site_author: Lluis Eriksson
+site_url: https://lluiseriksson.github.io/marked-rooted-closure/
+repo_url: https://github.com/lluiseriksson/marked-rooted-closure
+repo_name: lluiseriksson/marked-rooted-closure
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 Lluis Eriksson
+
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+    - search.highlight
+    - search.share
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_javascript:
+  - assets/javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/lluiseriksson/marked-rooted-closure
+
+nav:
+  - Home: index.md
+  - Integrated paper:
+      - Title and abstract: paper/index.md
+      - 1. Introduction: paper/01-introduction.md
+      - 2. Polymer systems with holes: paper/02-polymer-systems.md
+      - 3. Rooted tree-profile bound: paper/03-rooted-tree-profile.md
+      - 4. Parent-normalized moment kernels: paper/04-moment-kernels.md
+      - 5. Fixed-tree leaf elimination: paper/05-fixed-tree-elimination.md
+      - 6. Marked-root closure: paper/06-marked-root-closure.md
+      - 7. Target-preserving decay: paper/07-target-preserving-decay.md
+      - 8. Lean formalization: paper/08-lean-formalization.md
+      - 9. Mathematical interpretation: paper/09-interpretation.md
+      - 10. Related work: paper/10-related-work.md
+      - 11. Limitations: paper/11-limitations.md
+      - 12. Reproducibility: paper/12-reproducibility.md
+      - 13. Conclusion: paper/13-conclusion.md
+      - References: paper/references.md
+      - Appendices:
+          - Public theorem signatures: paper/appendix-a-signatures.md
+          - Constant audit: paper/appendix-b-constants.md
+          - Reviewer checklist: paper/appendix-c-reviewer-checklist.md
+  - Artifact:
+      - Theorem map: artifact/theorem-map.md
+      - Source provenance: artifact/source-provenance.md
+      - Reproducibility: artifact/reproducibility.md
+      - Build status: artifact/build-status.md
+      - Evaluation guide: artifact/evaluation.md
+      - Novelty and scope: artifact/scope.md
+      - Reviewer FAQ: artifact/reviewer-faq.md
+      - Supply-chain integrity: artifact/supply-chain.md
+  - Publication:
+      - Editorial positioning: publication/editorial-positioning.md
+      - Abstract and highlights: publication/abstract-and-highlights.md
+      - Cover letter: publication/cover-letter.md
+      - Submission checklist: publication/submission-checklist.md
+      - Author declarations: publication/author-declarations.md
+      - Submission metadata: publication/submission-metadata.md
+  - Legal and licensing: LICENSE.md
+  - Maintainers:
+      - Agent handoff: maintainers/agent-handoff.md
+      - Upload and migration: maintainers/upload-and-migration.md
+      - Repository audit: maintainers/repository-audit.md

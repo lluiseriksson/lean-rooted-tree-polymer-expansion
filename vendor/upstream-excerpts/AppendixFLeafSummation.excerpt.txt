@@ -1,8 +1,7 @@
 /-
 Verbatim theorem statement excerpts from the pinned upstream file
 YangMills/RG/AppendixFSecondUrsellLeafSummation.lean
-blob: 0307d11b95d4385d4ea39067290e7eec929cd7f6
-commit: 83d18a113e3fa22ada23b13361fb84015a1c80ed
+commit: 4e45246aa109671d25fcd01ba1abf7bc3f8506d1
 
 This file is provenance material only; the compiled dependency is fetched by
 Lake at the exact pinned commit.

@@ -1,19 +1,27 @@
 cff-version: 1.2.0
-message: "If you use this artifact, please cite the paper and the archived software release."
+message: "If you use this formalization artifact, cite the software release and integrated article."
 title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
-version: 1.0.0
+version: 2.0.0
 date-released: 2026-06-22
+type: software
 authors:
   - family-names: Eriksson
     given-names: Lluis
-license: AGPL-3.0-or-later
 repository-code: "https://github.com/lluiseriksson/marked-rooted-closure"
+url: "https://lluiseriksson.github.io/marked-rooted-closure/"
+license: AGPL-3.0-or-later
+abstract: >-
+  A documentation-integrated Lean 4 publication artifact for a finite,
+  target-preserving rooted-tree leaf-summation mechanism in polymer cluster
+  expansions with holes. The artifact exposes three stable theorem endpoints
+  and pins the exact upstream proof source, Lean toolchain, and Mathlib revision.
 keywords:
   - Lean 4
   - cluster expansion
   - polymer model
   - rooted tree
   - Ursell function
+  - modified metric
   - renormalization group
   - constructive quantum field theory
 preferred-citation:

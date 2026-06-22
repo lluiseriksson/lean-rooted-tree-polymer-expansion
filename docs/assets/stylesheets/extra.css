@@ -1,0 +1,57 @@
+:root {
+  --mrc-blue: #1a3a63;
+  --mrc-green: #166748;
+  --mrc-soft: #f5f7f9;
+}
+
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 650;
+}
+
+.md-typeset .theorem,
+.md-typeset .proposition,
+.md-typeset .corollary,
+.md-typeset .remark,
+.md-typeset .proof {
+  border-left: 0.22rem solid var(--mrc-blue);
+  border-radius: 0.2rem;
+  margin: 1.2rem 0;
+  padding: 0.7rem 1rem;
+  background: color-mix(in srgb, var(--mrc-soft) 90%, transparent);
+}
+
+.md-typeset .remark {
+  border-left-color: var(--mrc-green);
+}
+
+.md-typeset .proof {
+  border-left-color: #777;
+  background: transparent;
+}
+
+.md-typeset figure {
+  margin: 1.5rem auto;
+  text-align: center;
+}
+
+.md-typeset img[alt="Proof pipeline"],
+.md-typeset img[alt="Target-preserving proof pipeline"] {
+  width: 100%;
+  max-width: 58rem;
+}
+
+@media print {
+  .md-header,
+  .md-sidebar,
+  .md-footer,
+  .md-content__button {
+    display: none !important;
+  }
+
+  .md-main__inner,
+  .md-content {
+    max-width: none;
+    margin: 0;
+  }
+}

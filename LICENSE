@@ -1,12 +1,12 @@
 SPDX-License-Identifier: AGPL-3.0-or-later
 
-The Lean companion code in this repository is licensed under the GNU Affero
-General Public License, version 3 or (at your option) any later version, matching
-the pinned upstream project.
+The Lean source code and repository tooling in this repository are licensed
+under the GNU Affero General Public License, version 3 or (at your option) any
+later version, matching the pinned upstream project.
 
 Canonical license text:
 https://www.gnu.org/licenses/agpl-3.0.html
 
-The manuscript is supplied for scholarly submission.  Before publication, the
-author should select the publisher-compatible manuscript license (commonly
-CC BY 4.0 for an open-access preprint) and record it explicitly in the release.
+The integrated scholarly documentation under `docs/` is covered by the
+separate notice in `docs/LICENSE.md`. A publisher- or archive-compatible license
+may be added only by the copyright holder in a later release.
