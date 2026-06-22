@@ -1,37 +1,78 @@
-# Marked Rooted-Tree Closure
+# Lean Rooted-Tree Polymer Expansion
 
-**Machine-checked target-preserving leaf summation for polymer cluster expansions with holes.**
+**Machine-checked target-preserving Ursell leaf summation for polymer systems with holes.**
 
-[Read the integrated paper](paper/index.md){ .md-button .md-button--primary }
-[Reproduce the Lean build](artifact/reproducibility.md){ .md-button }
+[Read the article](paper/index.md){ .md-button .md-button--primary }
+[Read it as one page](generated/full-article.md){ .md-button }
+[Inspect the Lean theorems](formalization/index.md){ .md-button }
+[Reproduce the build](artifact/reproducibility.md){ .md-button }
 
-![Target-preserving proof pipeline](assets/images/proof-pipeline.png)
+![Target-preserving rooted-tree proof pipeline](assets/images/proof-pipeline.png)
+
+<div class="grid cards" markdown>
+
+-   **Integrated article**
+
+    ---
+
+    The manuscript, theorem map, references, and limitations are maintained in
+    the same versioned documentation tree.
+
+    [:octicons-arrow-right-24: Start reading](paper/index.md)
+
+-   **Lean 4 companion**
+
+    ---
+
+    Three stable public theorem names re-export exact proofs from one immutable
+    upstream revision.
+
+    [:octicons-arrow-right-24: Formalization map](formalization/index.md)
+
+-   **Auditable claims boundary**
+
+    ---
+
+    The site separates what the kernel checks from the model-specific and
+    continuum statements that remain outside the artifact.
+
+    [:octicons-arrow-right-24: Claims and scope](about/claims.md)
+
+-   **Reproducible release**
+
+    ---
+
+    Committed dependency locks, static audits, deterministic ZIP generation,
+    checksums, provenance attestation, and an SPDX SBOM support evaluation.
+
+    [:octicons-arrow-right-24: Reproduce it](artifact/reproducibility.md)
+
+</div>
 
 ## Result at a glance
 
 For complete-graph spanning trees on `n+1` labelled vertices, rooted at `0`,
-with rooted child counts `c_T(v)`, the formalized combinatorial estimate is
+with rooted child counts $c_T(v)$,
 
 $$
 \frac{n+1}{(n+1)!}
 \sum_T \prod_v c_T(v)! \le 4^n.
 $$
 
-Let `M` be the rooted/incompatible metric-moment constant and set
-`L = 4 M^2`. The marked-root leaf sum then satisfies
+Let $M$ be the rooted hard-core metric-moment constant and define $L=4M^2$.
+The marked-root leaf sum obeys
 
 $$
-(n+1)S_n(r) \le M L^n,
+(n+1)S_n(r)\le M L^n,
 $$
 
-and, after extracting modified-metric target decay **before** forgetting the
-exact union,
+and preserving the exact target union until decay is extracted gives
 
 $$
-T_n(Y) \le M e^{-\rho m(Y)} L^n.
+T_n(Y)\le M e^{-\rho m(Y)}L^n.
 $$
 
-The three stable Lean endpoints are:
+## Public theorem interface
 
 ```lean
 MarkedRootedClosure.normalizedRootedChildFactorialTreeBound
@@ -39,16 +80,20 @@ MarkedRootedClosure.markedRootLeafGeometricBound
 MarkedRootedClosure.targetPreservingWeightedTreeBound
 ```
 
-## Claims boundary
+Each alias is an exact application of a theorem in the pinned upstream proof
+development. See the [endpoint table](formalization/index.md) and the
+[machine-readable theorem manifest](artifact/theorem-map.md).
 
-This repository proves finite combinatorics and its target-sensitive geometric
-composition. It does **not** prove the model-specific raw Yang--Mills activity
-bound, `hRpoly`, a continuum limit, Osterwalder--Schrader reconstruction, or a
-continuum mass gap. See [Scope and limitations](paper/11-limitations.md).
+## Trust boundary
 
-## Publication model
+This repository proves finite combinatorics and target-sensitive geometric
+composition. It does not prove a model-specific raw Yang--Mills activity,
+`hRpoly`, a continuum limit, reconstruction, or a mass gap. That distinction is
+part of the artifact, not a footnote: see [Claims and scope](about/claims.md).
 
-The scholarly article is maintained directly as this versioned documentation
-site. There is no separately tracked manuscript PDF: prose, formulas, theorem
-maps, source provenance, and reproducibility instructions live in one reviewable
-repository and are deployed together through GitHub Pages.
+## Why the public name should change
+
+The present slug `marked-rooted-closure` is compact but opaque. The recommended
+rename is **`lean-rooted-tree-polymer-expansion`**, which names the formal
+method, the mathematical object, and the implementation language. See the
+[rename proposal](maintainers/rename-repository.md).

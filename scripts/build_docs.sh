@@ -2,6 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+python3 scripts/assemble_paper.py
+
 if [[ -x .venv-docs/bin/python ]]; then
   PY=.venv-docs/bin/python
 else

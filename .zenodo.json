@@ -2,7 +2,7 @@
   "title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
   "upload_type": "software",
   "publication_date": "2026-06-22",
-  "description": "Documentation-integrated publication artifact containing a Lean 4 companion, full scholarly article, theorem map, source provenance, and reproducibility tooling for target-preserving rooted-tree leaf summation in polymer cluster expansions with holes. Code and tooling are AGPL-3.0-or-later; original documentation and figures are CC BY 4.0.",
+  "description": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes. The repository contains the integrated article, Lean 4 theorem aliases, exact proof-source locks, deterministic release tooling, and an SPDX software bill of materials. Code and tooling are AGPL-3.0-or-later; original documentation and figures are CC BY 4.0.",
   "creators": [
     {
       "name": "Eriksson, Lluis"
@@ -22,5 +22,6 @@
       "scheme": "url"
     }
   ],
-  "version": "2.0.0"
+  "version": "2.1.0",
+  "access_right": "open"
 }

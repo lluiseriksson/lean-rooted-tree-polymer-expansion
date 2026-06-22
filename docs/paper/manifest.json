@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes",
+  "subtitle": "A Lean 4 formalization",
+  "author": "Lluis Eriksson",
+  "date": "June 2026",
+  "sections": [
+    "00-reader-guide.md",
+    "01-introduction.md",
+    "02-polymer-systems.md",
+    "03-rooted-tree-profile.md",
+    "04-moment-kernels.md",
+    "05-fixed-tree-elimination.md",
+    "06-marked-root-closure.md",
+    "07-target-preserving-decay.md",
+    "08-lean-formalization.md",
+    "09-interpretation.md",
+    "10-related-work.md",
+    "11-limitations.md",
+    "12-reproducibility.md",
+    "13-conclusion.md",
+    "references.md",
+    "appendix-a-signatures.md",
+    "appendix-b-constants.md",
+    "appendix-c-reviewer-checklist.md"
+  ]
+}

@@ -1,27 +1,34 @@
-site_name: Marked Rooted-Tree Closure
-site_description: Machine-checked target-preserving leaf summation for polymer cluster expansions with holes
+site_name: Lean Rooted-Tree Polymer Expansion
+site_description: Machine-checked target-preserving Ursell leaf summation for polymer systems with holes
 site_author: Lluis Eriksson
-site_url: https://lluiseriksson.github.io/marked-rooted-closure/
-repo_url: https://github.com/lluiseriksson/marked-rooted-closure
-repo_name: lluiseriksson/marked-rooted-closure
+site_url: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/
+repo_url: https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion
+repo_name: lluiseriksson/lean-rooted-tree-polymer-expansion
 edit_uri: edit/main/docs/
-copyright: Copyright &copy; 2026 Lluis Eriksson
+copyright: Copyright &copy; 2026 Lluis Eriksson · Documentation licensed CC BY 4.0
 
 strict: true
+not_in_nav: |
+  404.md
 
 theme:
   name: material
   language: en
   features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
     - navigation.instant
     - navigation.instant.prefetch
-    - navigation.sections
     - navigation.top
     - navigation.footer
+    - toc.follow
     - content.code.copy
+    - content.code.annotate
     - content.action.edit
     - search.highlight
     - search.share
+    - search.suggest
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -39,7 +46,8 @@ theme:
         name: Switch to light mode
 
 plugins:
-  - search
+  - search:
+      lang: en
   - minify:
       minify_html: true
 
@@ -71,16 +79,25 @@ extra_javascript:
 
 extra_css:
   - assets/stylesheets/extra.css
+  - assets/stylesheets/print.css
 
 extra:
+  generator: false
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/lluiseriksson/marked-rooted-closure
+      link: https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion
+      name: Source repository
 
 nav:
-  - Home: index.md
-  - Integrated paper:
-      - Title and abstract: paper/index.md
+  - Overview:
+      - Home: index.md
+      - What this project is: about/overview.md
+      - Claims and scope: about/claims.md
+      - Notation and terminology: about/notation.md
+  - Integrated article:
+      - Article landing: paper/index.md
+      - Continuous reading view: generated/full-article.md
+      - Reader guide: paper/00-reader-guide.md
       - 1. Introduction: paper/01-introduction.md
       - 2. Polymer systems with holes: paper/02-polymer-systems.md
       - 3. Rooted tree-profile bound: paper/03-rooted-tree-profile.md
@@ -99,13 +116,14 @@ nav:
           - Public theorem signatures: paper/appendix-a-signatures.md
           - Constant audit: paper/appendix-b-constants.md
           - Reviewer checklist: paper/appendix-c-reviewer-checklist.md
-  - Artifact:
-      - Theorem map: artifact/theorem-map.md
+  - Formalization:
+      - Lean theorem map: formalization/index.md
+      - Machine-readable theorem map: artifact/theorem-map.md
       - Source provenance: artifact/source-provenance.md
+      - Build and oracle status: artifact/build-status.md
+  - Artifact evaluation:
       - Reproducibility: artifact/reproducibility.md
-      - Build status: artifact/build-status.md
       - Evaluation guide: artifact/evaluation.md
-      - Novelty and scope: artifact/scope.md
       - Reviewer FAQ: artifact/reviewer-faq.md
       - Supply-chain integrity: artifact/supply-chain.md
   - Publication:
@@ -115,8 +133,10 @@ nav:
       - Submission checklist: publication/submission-checklist.md
       - Author declarations: publication/author-declarations.md
       - Submission metadata: publication/submission-metadata.md
-  - Legal and licensing: LICENSE.md
   - Maintainers:
+      - Rename proposal: maintainers/rename-repository.md
+      - Release playbook: maintainers/release-playbook.md
       - Agent handoff: maintainers/agent-handoff.md
       - Upload and migration: maintainers/upload-and-migration.md
       - Repository audit: maintainers/repository-audit.md
+  - Legal and licensing: LICENSE.md

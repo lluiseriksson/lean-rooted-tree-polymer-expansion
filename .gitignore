@@ -6,8 +6,10 @@
 *.o
 site/
 release/
+docs/generated/
 .venv/
 .venv-docs/
+.oracle.log
 __pycache__/
 .pytest_cache/
 .mypy_cache/

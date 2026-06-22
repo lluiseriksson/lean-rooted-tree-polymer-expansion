@@ -1,10 +1,12 @@
-Marked Rooted-Tree Closure
+Lean Rooted-Tree Polymer Expansion
 Copyright (c) 2026 Lluis Eriksson
+
+Article title: Marked Rooted-Tree Summation for Polymer Cluster Expansions with
+Holes: A Lean 4 Formalization.
 
 Lean source code and repository tooling: AGPL-3.0-or-later.
 Original integrated scholarly documentation and figures: CC BY 4.0.
 
 This repository depends on Lean, Mathlib, Material for MkDocs, and a pinned
-revision of THE-ERIKSSON-PROGRAMME. Their respective licenses apply to those
-dependencies. Third-party references and cited source material retain their
-respective copyrights.
+revision of THE-ERIKSSON-PROGRAMME. Their respective licenses apply. Cited
+literature and third-party source material retain their own copyrights.

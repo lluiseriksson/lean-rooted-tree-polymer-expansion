@@ -1,35 +1,32 @@
-# Build status at package assembly
+# Build status and verification boundary
 
-**Assembly date:** 2026-06-22
+**Package assembly date:** 2026-06-22
 
-## Completed in this environment
+## Locally audited for this source package
 
-- The supplied v1.0.0 archive was unpacked and structurally compared with the
-  public repository README and theorem interface.
-- The public Lean wrappers were checked against theorem names still present in
-  upstream commit `4e45246aa109671d25fcd01ba1abf7bc3f8506d1`.
-- The full article, bibliography, declarations, submission metadata, and figure
-  source were migrated into the versioned documentation tree.
-- Static claim, lock, metadata, placeholder, JSON/YAML, CFF-schema, and internal
-  link audits passed.
-- MkDocs built the complete site in strict mode.
-- Python and shell scripts passed syntax checks.
-- The deterministic source ZIP was generated twice with identical SHA-256
-  output and passed archive-manifest verification.
+- repository structure and required-file inventory;
+- JSON and YAML syntax available in the assembly environment;
+- project identity and URL consistency;
+- upstream, Mathlib, Lean, and Lake-manifest pin consistency;
+- paper section manifest and generated continuous article;
+- internal Markdown link targets;
+- absence of `sorry`, `admit`, tracked standalone PDFs, and legacy release
+  directories;
+- deterministic source archive generation, archive-local manifest, checksums,
+  and SPDX SBOM structure;
+- Python syntax and shell-script parse checks.
 
-## Deferred to GitHub Actions
+## CI-required gates
 
-Lean and outbound Git were unavailable in the package-assembly container, so a
-fresh kernel rebuild could not be run here. The repository therefore includes:
+The package-assembly environment does not provide outbound Git, the pinned Lean
+toolchain cache, or the MkDocs dependencies. Therefore the following must be
+confirmed by the uploaded repository workflows before release:
 
-- an exact Lean toolchain pin;
-- an exact upstream commit pin;
-- the upstream Mathlib pin;
-- a clean-cache Lean CI job;
-- an axiom-oracle invocation;
-- strict documentation CI and Pages deployment;
-- deterministic release checks and provenance attestation;
-- explicit publication gates requiring a green CI URL before release.
+- fresh Lean kernel compilation;
+- axiom-oracle output;
+- strict MkDocs Material build;
+- GitHub Pages deployment;
+- provenance attestation for the tagged source archive.
 
-A publishing agent must not describe the Lean build as freshly verified until
-the uploaded repository's CI is green.
+A publishing agent must not describe those gates as complete until the
+corresponding workflow URLs are green.

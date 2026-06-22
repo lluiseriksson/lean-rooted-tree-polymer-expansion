@@ -1,23 +1,29 @@
 # Supply-chain and release integrity
 
-The artifact uses four independent integrity layers:
+The artifact uses complementary integrity layers.
 
-1. **Immutable mathematical dependency.** `lakefile.lean` and
-   `archive/UPSTREAM.lock` pin the exact upstream proof commit; the upstream
-   package pins Mathlib.
-2. **Kernel verification.** CI compiles the publication wrappers and runs the
-   axiom oracle on the three public endpoints.
-3. **Source-tree manifest.** `MANIFEST.sha256` records every release source file
+1. **Immutable proof dependency.** `lakefile.lean`, `lake-manifest.json`, and
+   `archive/UPSTREAM.lock` agree on the exact upstream and Mathlib revisions.
+2. **Kernel verification.** CI compiles the public wrappers and runs the axiom
+   oracle.
+3. **Claims manifest.** `archive/theorem-manifest.json` maps every public theorem
+   to its upstream name, source file, and article section.
+4. **Source-tree manifest.** `MANIFEST.sha256` records each packaged source file
    other than itself.
-4. **Archive sidecar.** Each deterministic release ZIP receives a separate
-   SHA-256 file; `scripts/verify_release.py` checks the sidecar, ZIP integrity,
-   archive-local manifest, required files, and forbidden legacy paths.
+5. **Deterministic archive.** ZIP timestamps, permissions, ordering, and root
+   directory are normalized; CI requires two independent builds to match
+   byte-for-byte.
+6. **Archive sidecar.** A separate SHA-256 file authenticates the ZIP.
+7. **Software bill of materials.** Packaging emits SPDX 2.3 JSON covering the
+   root artifact, locked Lean packages, and pinned documentation dependencies.
+8. **Hosted provenance.** Tagged releases request a GitHub build-provenance
+   attestation.
 
-Tagged releases also request a GitHub artifact provenance attestation. The
-attestation supplements, but does not replace, the source lock and Lean kernel
-build.
+The release verifier checks the ZIP sidecar, member integrity, archive-local
+manifest, required files, forbidden paths, and absence of tracked PDF/ZIP
+binaries inside the source archive.
 
-Actions are updated through Dependabot. Before a high-assurance archival
-release, the maintainer should review action updates, pin immutable action
-revisions if required by the target institution, and retain the successful
-workflow URL with the release metadata.
+GitHub Actions and Python documentation packages are monitored by Dependabot.
+For institutions requiring immutable action revisions, a maintainer should pin
+reviewed action commits in a dedicated security change and preserve the
+successful workflow URL with the archival metadata.

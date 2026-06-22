@@ -2,54 +2,79 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import shutil
 import stat
 import zipfile
+from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-VERSION = json.loads((ROOT / "archive/theorem-manifest.json").read_text())["version"]
-NAME = f"marked-rooted-closure-v{VERSION}"
-OUT = ROOT / "release"
-ZIP = OUT / f"{NAME}.zip"
-SIDE = OUT / f"{NAME}.zip.sha256"
-EXCLUDED = {".git", ".lake", "site", "release", ".venv", ".venv-docs", "__pycache__"}
-FIXED_TIME = (2026, 6, 22, 12, 0, 0)
+from project_config import ROOT, load_project, release_stem
 
-shutil.rmtree(OUT, ignore_errors=True)
-OUT.mkdir(parents=True)
+project = load_project()
+name = release_stem(project)
+out = ROOT / "release"
+zip_path = out / f"{name}.zip"
+sidecar = out / f"{name}.zip.sha256"
+excluded_roots = {
+    ".git", ".lake", "site", "release", ".venv", ".venv-docs",
+    "__pycache__", "docs/generated",
+}
+release_date = date.fromisoformat(project["release_date"])
+fixed_time = (release_date.year, release_date.month, release_date.day, 12, 0, 0)
+
+
+def is_excluded(rel: Path) -> bool:
+    value = rel.as_posix()
+    return (
+        any(value == item or value.startswith(item + "/") for item in excluded_roots)
+        or any(part in {"__pycache__", ".pytest_cache", ".mypy_cache"} for part in rel.parts)
+    )
+
+
+shutil.rmtree(out, ignore_errors=True)
+out.mkdir(parents=True)
 
 files: list[Path] = []
 for path in sorted(ROOT.rglob("*"), key=lambda p: p.as_posix()):
     if not path.is_file():
         continue
     rel = path.relative_to(ROOT)
-    if any(part in EXCLUDED for part in rel.parts):
+    if is_excluded(rel):
         continue
     files.append(path)
 
-# Create an archive-local manifest from the exact bytes to be written.
+required = {
+    Path("project.json"),
+    Path("lake-manifest.json"),
+    Path("docs/paper/manifest.json"),
+    Path("archive/theorem-manifest.json"),
+    Path("MarkedRootedClosure/PaperTheorems.lean"),
+}
+found = {path.relative_to(ROOT) for path in files}
+missing = required - found
+if missing:
+    raise SystemExit("release input missing required files: " + ", ".join(map(str, sorted(missing))))
+
 manifest_rows = []
 for path in files:
     if path.name == "MANIFEST.sha256":
         continue
     rel = path.relative_to(ROOT).as_posix()
     manifest_rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {rel}")
-manifest_bytes = ("\n".join(manifest_rows) + "\n").encode()
+manifest_bytes = ("\n".join(manifest_rows) + "\n").encode("utf-8")
 
-with zipfile.ZipFile(ZIP, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
     for path in files:
         rel = path.relative_to(ROOT).as_posix()
         data = manifest_bytes if rel == "MANIFEST.sha256" else path.read_bytes()
-        zi = zipfile.ZipInfo(f"{NAME}/{rel}", FIXED_TIME)
-        zi.compress_type = zipfile.ZIP_DEFLATED
+        info = zipfile.ZipInfo(f"{name}/{rel}", fixed_time)
+        info.compress_type = zipfile.ZIP_DEFLATED
         mode = 0o755 if path.stat().st_mode & stat.S_IXUSR else 0o644
-        zi.external_attr = (mode & 0xFFFF) << 16
-        zi.create_system = 3
-        zf.writestr(zi, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+        info.external_attr = (mode & 0xFFFF) << 16
+        info.create_system = 3
+        zf.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
 
-digest = hashlib.sha256(ZIP.read_bytes()).hexdigest()
-SIDE.write_text(f"{digest}  {ZIP.name}\n")
-print(f"release created: {ZIP}")
+digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+sidecar.write_text(f"{digest}  {zip_path.name}\n", encoding="utf-8")
+print(f"release created: {zip_path}")
 print(f"sha256: {digest}")
