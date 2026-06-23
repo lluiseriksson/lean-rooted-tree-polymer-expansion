@@ -178,11 +178,11 @@ jobs:
           print(f'exact release inventory: OK ({len(expected)} files)')
           PY
       - name: Attest source archive provenance
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: release/${{ steps.inventory.outputs.stem }}.zip
       - name: Attest release evidence provenance
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: |
             release/${{ steps.inventory.outputs.stem }}.spdx.json
