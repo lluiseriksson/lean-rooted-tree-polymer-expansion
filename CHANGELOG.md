@@ -2,6 +2,81 @@
 
 All notable changes to this publication artifact are recorded here.
 
+## 2.4.2 - 2026-06-23
+
+### Fixed
+
+- Prevented interrupted local Lean/Lake runs from leaving descendant processes
+  alive. The supervised runner isolates each command in its own process group,
+  notices timeout, interrupt, or parent-process loss, and escalates from graceful
+  termination to a forced group kill.
+- Rejected nominally successful commands that leave background descendants;
+  the supervisor now terminates the residual process group and reports the run
+  as invalid. Explicit `lake update` and best-effort `lake clean` are supervised
+  as well as the build and oracle gates.
+- Removed duplicate Lean compilation from GitHub Actions. The pinned Lean action
+  now performs one explicit `MarkedRootedClosure` build, after which
+  `make lean-oracle` audits the three publication endpoints.
+- Enabled the pinned Lean environment checker in every kernel-bearing workflow
+  and made the workflow audit reject its accidental removal.
+- Required `lake-manifest.json` to remain byte-identical during both the local
+  build and oracle phases even outside a Git checkout.
+- Serialized composite Make gates under callers that pass `-j`, preventing the
+  documentation generator and static audit from racing over generated files.
+- Excluded the intentionally transient `.oracle.log` from the distributable
+  source inventory while retaining it after a failed oracle run for diagnosis.
+- Corrected deterministic local provenance so it no longer presents itself as
+  an execution-bound GitHub release attestation; hosted attestations remain the
+  separate execution evidence.
+- Tightened both the provenance schema and release verifier to require the exact
+  non-execution-bound builder identity, source-input digests, release recipe,
+  external Lean gates, and resolved dependency set.
+
+### Added
+
+- `scripts/process_runner.py` and `scripts/run_lean_gate.py`, with regression
+  tests for timeout bounds, SIGTERM-resistant descendant cleanup, residual
+  background-process rejection, parent loss, lock drift, and exact-oracle
+  failure handling.
+- `make verify-nonlean` and its `make preflight` alias for local source-package
+  review before the authoritative Lean gate runs in GitHub Actions.
+- Workflow-policy tests that reject implicit Lean-action auto-configuration and
+  any accidental second full Lean build.
+
+### Preserved
+
+- The three public Lean theorem statements, exact upstream proof revision,
+  Lean/Mathlib pins, oracle axiom boundary, and mathematical claims boundary.
+
+## 2.4.1 - 2026-06-23
+
+### Fixed
+
+- Closed a release-integrity gap in which `MANIFEST.sha256` could be stale in
+  the committed tree while packaging silently regenerated a correct archive
+  manifest. `make static` and the clean-room audit now reject that drift.
+- Unified manifest generation and ZIP assembly on one canonical source
+  inventory, preventing their exclusion policies from diverging.
+- Rejected source-tree symlinks, non-regular entries, control-character paths,
+  non-NFC paths, Windows-reserved names, and case-insensitive path
+  collisions before packaging can read or archive them.
+- Rejected non-canonical ZIP aliases and file/directory path collisions
+  before extraction, preventing multiple members from resolving to one target.
+- Corrected the release-playbook version-bump command, an obsolete roadmap
+  item, duplicated agent-instruction numbering, and stale test-count prose.
+
+### Added
+
+- A dependency-free source-inventory module, explicit manifest audit command,
+  and regression coverage for content drift, newly added files, exclusions,
+  path collisions, portable-name violations, and file or directory
+  symlinks.
+
+### Preserved
+
+- The three public Lean theorem statements, exact upstream proof revision,
+  Lean/Mathlib pins, oracle boundary, and mathematical claims boundary.
+
 ## 2.4.0 - 2026-06-23
 
 ### Fixed

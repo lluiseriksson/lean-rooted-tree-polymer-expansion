@@ -12,7 +12,13 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from archive_safety import MAX_MEMBER_BYTES, MAX_TOTAL_BYTES, validated_members
-from project_config import ROOT, load_project, release_stem
+from project_config import (
+    ROOT,
+    load_project,
+    release_stem,
+    repository_url,
+    site_url,
+)
 from python_requirements import canonical_name, parse_exact_requirements, requirement_map
 
 
@@ -133,16 +139,23 @@ def verify_zip(zip_path: Path, project: dict[str, Any]) -> str:
             PurePosixPath("schemas/release-index.schema.json"),
             PurePosixPath("scripts/check_version_consistency.py"),
             PurePosixPath("scripts/check_python_lock.py"),
+            PurePosixPath("scripts/check_source_manifest.py"),
+            PurePosixPath("scripts/source_inventory.py"),
             PurePosixPath("scripts/check_proof_dag.py"),
             PurePosixPath("scripts/check_accessibility.py"),
             PurePosixPath("scripts/archive_safety.py"),
+            PurePosixPath("scripts/process_runner.py"),
+            PurePosixPath("scripts/run_lean_gate.py"),
             PurePosixPath("scripts/generate_provenance.py"),
             PurePosixPath("scripts/verify_release.py"),
             PurePosixPath("tests/test_archive_safety.py"),
             PurePosixPath("tests/test_metadata_schema.py"),
             PurePosixPath("tests/test_proof_dag.py"),
+            PurePosixPath("tests/test_process_runner.py"),
             PurePosixPath("tests/test_provenance.py"),
+            PurePosixPath("tests/test_run_lean_gate.py"),
             PurePosixPath("tests/test_python_lock.py"),
+            PurePosixPath("tests/test_source_inventory.py"),
             PurePosixPath("tests/test_version_consistency.py"),
             PurePosixPath("mkdocs.yml"),
         }
@@ -238,21 +251,106 @@ def _verify_provenance(path: Path, artifacts: dict[str, Path], project: dict[str
         raise ValueError("in-toto statement type mismatch")
     if statement.get("predicateType") != "https://slsa.dev/provenance/v1":
         raise ValueError("SLSA predicate type mismatch")
-    subjects = {item.get("name"): item.get("digest", {}).get("sha256") for item in statement.get("subject", [])}
-    for name in ("zip", "spdx", "cyclonedx", "buildinfo"):
-        artifact = artifacts[name]
-        if subjects.get(artifact.name) != sha256(artifact):
-            raise ValueError(f"provenance subject mismatch: {artifact.name}")
-    resolved = statement.get("predicate", {}).get("buildDefinition", {}).get("resolvedDependencies", [])
-    deps = {(item.get("uri"), tuple(sorted(item.get("digest", {}).items()))) for item in resolved if isinstance(item, dict)}
+    subject_items = statement.get("subject", [])
+    if not isinstance(subject_items, list):
+        raise ValueError("provenance subjects must be an array")
+    subjects = {
+        item.get("name"): item.get("digest", {}).get("sha256")
+        for item in subject_items
+        if isinstance(item, dict) and isinstance(item.get("digest"), dict)
+    }
+    expected_subjects = {
+        artifacts[name].name: sha256(artifacts[name])
+        for name in ("zip", "spdx", "cyclonedx", "buildinfo")
+    }
+    if len(subject_items) != len(subjects) or subjects != expected_subjects:
+        raise ValueError("provenance subject set does not exactly match release artifacts")
+
+    predicate = statement.get("predicate")
+    if not isinstance(predicate, dict):
+        raise ValueError("provenance predicate must be an object")
+    definition = predicate.get("buildDefinition")
+    run_details = predicate.get("runDetails")
+    if not isinstance(definition, dict) or not isinstance(run_details, dict):
+        raise ValueError("provenance buildDefinition/runDetails missing")
+    if definition.get("buildType") != site_url(project) + "build-types/source-release-v1":
+        raise ValueError("provenance build type mismatch")
+    expected_external = {
+        "repository": repository_url(project),
+        "version": project["version"],
+        "releaseDate": project["release_date"],
+        "publicationModel": project["publication_model"],
+        "releaseProfile": project["release_profile"],
+    }
+    if definition.get("externalParameters") != expected_external:
+        raise ValueError("provenance external parameters mismatch")
+
+    expected_source_paths = {
+        "python_lock": project["python_lock"],
+        "theorem_manifest": "archive/theorem-manifest.json",
+        "proof_dag": project["proof_dag"],
+        "paper_manifest": "docs/paper/manifest.json",
+        "actions_manifest": "archive/actions-manifest.json",
+        "citation_schema": project["citation_schema"],
+        "source_manifest": "MANIFEST.sha256",
+    }
+    expected_source_inputs = {
+        name: {"path": rel, "sha256": sha256(ROOT / rel)}
+        for name, rel in expected_source_paths.items()
+    }
+    internal = definition.get("internalParameters")
+    expected_internal = {
+        "releaseRecipe": ["make package-determinism"],
+        "requiredExternalGates": [
+            "leanprover/lean-action build MarkedRootedClosure",
+            "make lean-oracle",
+        ],
+        "sourceInputs": expected_source_inputs,
+    }
+    if internal != expected_internal:
+        raise ValueError("provenance internal parameters mismatch")
+
+    resolved = definition.get("resolvedDependencies", [])
+    if not isinstance(resolved, list):
+        raise ValueError("provenance dependencies must be an array")
+    deps: set[tuple[str, tuple[tuple[str, str], ...]]] = set()
+    for item in resolved:
+        if not isinstance(item, dict) or not isinstance(item.get("uri"), str):
+            raise ValueError("malformed provenance dependency")
+        digest = item.get("digest")
+        if not isinstance(digest, dict) or len(digest) != 1:
+            raise ValueError("malformed provenance dependency digest")
+        if not all(isinstance(key, str) and isinstance(value, str) for key, value in digest.items()):
+            raise ValueError("malformed provenance dependency digest")
+        deps.add((item["uri"], tuple(sorted(digest.items()))))
     required = {
         (project["upstream_repository"] + ".git", (("gitCommit", project["upstream_commit"]),)),
         ("https://github.com/leanprover-community/mathlib4.git", (("gitCommit", project["mathlib_commit"]),)),
+        (
+            "https://github.com/leanprover/elan/blob/"
+            + project["elan_installer_commit"]
+            + "/elan-init.sh",
+            (("gitBlob", project["elan_installer_blob_sha"]),),
+        ),
         ("file:" + project["python_lock"], (("sha256", sha256(ROOT / project["python_lock"])),)),
         ("file:archive/actions-manifest.json", (("sha256", sha256(ROOT / "archive/actions-manifest.json")),)),
     }
-    if not required.issubset(deps):
-        raise ValueError("provenance resolved dependency set is incomplete")
+    if len(resolved) != len(deps) or deps != required:
+        raise ValueError("provenance resolved dependency set mismatch")
+
+    expected_run_details = {
+        "builder": {
+            "id": site_url(project) + "builders/deterministic-source-tooling-v1"
+        },
+        "metadata": {
+            "invocationId": "deterministic-source-release-v" + project["version"],
+            "reproducible": True,
+            "executionBound": False,
+            "hostedAttestationRequired": True,
+        },
+    }
+    if run_details != expected_run_details:
+        raise ValueError("provenance run details mismatch")
 
 
 def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
@@ -291,6 +389,20 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
         record = buildinfo.get("source_inputs", {}).get(key, {})
         if record.get("path") != rel or record.get("sha256") != sha256(ROOT / rel):
             raise ValueError(f"build-info source input mismatch: {key}")
+    expected_verification = {
+        "source_commands": [
+            "make verify-nonlean",
+            "leanprover/lean-action build MarkedRootedClosure",
+            "make lean-oracle",
+            "make package-determinism",
+            "make smoke-release",
+        ],
+        "axiom_policy": ["propext", "Classical.choice", "Quot.sound"],
+        "standalone_pdf_tracked": False,
+        "ci_python": "3.12",
+    }
+    if buildinfo.get("verification") != expected_verification:
+        raise ValueError("build-info verification policy mismatch")
     records = {item.get("name"): item for item in buildinfo.get("artifacts", []) if isinstance(item, dict)}
     for key in ("zip", "spdx", "cyclonedx"):
         path = artifacts[key]

@@ -5,7 +5,7 @@
 Canonical repository: https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion
 Documentation: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/
 Integrated article: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/paper/
-Version: 2.4.0
+Version: 2.4.2
 
 ## Public Lean endpoints
 
@@ -33,10 +33,14 @@ This artifact proves finite rooted-tree combinatorics and target-sensitive geome
 - archive/UPSTREAM.lock — exact proof and toolchain pins
 - requirements-docs.lock — exact transitive Python documentation environment
 - docs/artifact/verification-contract.md — acceptance criteria
+- scripts/run_lean_gate.py — supervised local Lean build and oracle entrypoint
+- scripts/process_runner.py — timeout, signal, and parent-loss process-tree cleanup
 - docs/artifact/source-provenance.md — proof provenance
 - docs/maintainers/agent-handoff.md — safe modification protocol
 - AGENTS.md — repository-level agent rules
 
 ## Verification
 
-Run: make docs-setup && make verify && make package-determinism
+Local: make docs-setup && make verify-nonlean && make package-determinism
+Lean gate: GitHub Actions builds once, then runs make lean-oracle
+Optional local Lean: make lean

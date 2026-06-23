@@ -2,11 +2,12 @@
 
 ## Repository and verification
 
-- [ ] Install the complete v2.4.0 replacement tree with deletion enabled.
+- [ ] Install the complete v2.4.2 replacement tree with deletion enabled.
 - [ ] Confirm `lake-manifest.json` is tracked and unchanged by ordinary builds.
-- [ ] Run `make test`, `make static`, and a fresh Lean build from an empty Lake cache.
-- [ ] Inspect the oracle output, confirm the exact three-axiom set for every
-      endpoint, and record the green CI URL and final commit.
+- [ ] Run `make verify-nonlean` and `make package-determinism` locally.
+- [ ] Confirm GitHub Actions performs one explicit Lean build from the committed Lake graph.
+- [ ] Inspect the subsequent `make lean-oracle` output, confirm the exact
+      three-axiom set for every endpoint, and record the green CI URL and final commit.
 - [ ] Build MkDocs in strict mode and inspect sectional and continuous article
       views on desktop and mobile.
 - [ ] Confirm GitHub Pages uses the Actions deployment workflow and that
@@ -14,8 +15,9 @@
 - [ ] Protect `main` and require Lean, documentation, and package checks.
 - [ ] Verify deterministic ZIP generation and the clean-room archive smoke test.
 - [ ] Verify ZIP and JSON sidecars, aggregate checksums, SPDX SBOM, CycloneDX
-      SBOM, build info, release index, and provenance attestations.
-- [ ] Create a signed or annotated `v2.4.0` tag only after all gates pass.
+      SBOM, build info, release index, deterministic in-toto declaration, and
+      separate hosted provenance attestations.
+- [ ] Create a signed or annotated `v2.4.2` tag only after all gates pass.
 - [ ] Archive the exact tagged release.
 
 ## Scholarly metadata

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import os
 import runpy
-import subprocess
 import sys
 import unittest
 from pathlib import Path
+
+from process_runner import run_checked
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = [
@@ -16,6 +17,7 @@ CHECKS = [
     "scripts/check_version_consistency.py",
     "scripts/check_python_lock.py",
     "scripts/check_lake_lock.py",
+    "scripts/check_source_manifest.py",
     "scripts/check_paper_manifest.py",
     "scripts/check_theorem_manifest.py",
     "scripts/check_proof_dag.py",
@@ -38,10 +40,9 @@ def main() -> None:
         raise SystemExit("clean-room unit tests failed")
 
     print("clean-room: Lean placeholder audit", flush=True)
-    subprocess.run(
+    run_checked(
         ["bash", "scripts/check_no_placeholders.sh"],
         cwd=ROOT,
-        check=True,
         timeout=60,
     )
 

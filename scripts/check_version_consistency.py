@@ -81,6 +81,18 @@ def validate(root: Path = ROOT) -> list[str]:
         if needle not in text:
             errors.append(f"{rel} missing current release marker {needle!r}")
 
+    playbook = root / "docs/maintainers/release-playbook.md"
+    expected_bump = f"python3 scripts/bump_version.py {version} --date {date}"
+    try:
+        playbook_text = playbook.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"cannot read docs/maintainers/release-playbook.md: {exc}")
+    else:
+        if expected_bump not in playbook_text:
+            errors.append(
+                "release playbook does not use the current bump_version.py --date command"
+            )
+
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     if f"## {version} - {date}" not in changelog:
         errors.append("CHANGELOG.md lacks current version/date heading")

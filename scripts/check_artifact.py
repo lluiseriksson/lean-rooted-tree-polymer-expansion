@@ -89,6 +89,8 @@ required = [
     "scripts/check_theorem_manifest.py",
     "scripts/check_version_consistency.py",
     "scripts/check_python_lock.py",
+    "scripts/check_source_manifest.py",
+    "scripts/source_inventory.py",
     "scripts/check_proof_dag.py",
     "scripts/check_accessibility.py",
     "scripts/lean_signatures.py",
@@ -102,6 +104,8 @@ required = [
     "scripts/generate_release_index.py",
     "scripts/generate_provenance.py",
     "scripts/archive_safety.py",
+    "scripts/process_runner.py",
+    "scripts/run_lean_gate.py",
     "scripts/check_release_determinism.py",
     "scripts/smoke_test_release.py",
     "scripts/cleanroom_audit.py",
@@ -120,8 +124,11 @@ required = [
     "tests/test_accessibility.py",
     "tests/test_metadata_schema.py",
     "tests/test_proof_dag.py",
+    "tests/test_process_runner.py",
     "tests/test_provenance.py",
+    "tests/test_run_lean_gate.py",
     "tests/test_python_lock.py",
+    "tests/test_source_inventory.py",
     "tests/test_version_consistency.py",
 ]
 missing = [p for p in required if not (ROOT / p).is_file()]
@@ -237,12 +244,18 @@ if "lake update" in lean_block:
     raise SystemExit("ordinary Lean verification must not refresh dependency locks")
 if "lock-refresh:" not in makefile or "lake update" not in makefile.split("lock-refresh:", 1)[1]:
     raise SystemExit("explicit lock-refresh target is missing")
+lock_refresh_block = makefile.split("lock-refresh:", 1)[1].split("\n\n", 1)[0]
+if "scripts/process_runner.py" not in lock_refresh_block:
+    raise SystemExit("lock-refresh must supervise lake update")
 for command in (
     "scripts/check_version_consistency.py",
     "scripts/check_python_lock.py",
+    "scripts/check_source_manifest.py",
     "scripts/check_proof_dag.py",
     "scripts/check_accessibility.py",
     "scripts/generate_provenance.py",
+    "scripts/process_runner.py",
+    "scripts/run_lean_gate.py",
 ):
     if command not in makefile:
         raise SystemExit(f"Makefile audit/evidence command missing: {command}")

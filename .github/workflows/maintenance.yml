@@ -32,14 +32,18 @@ jobs:
           cache-dependency-path: requirements-docs.lock
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
+          auto-config: false
+          build: true
+          build-args: MarkedRootedClosure
+          leanchecker: true
           use-github-cache: false
       - name: Install documentation dependencies
         run: |
           python -m pip install -r requirements-docs.lock
           python -m pip check
-      - name: Full verification from a cold Lean cache
-        run: make verify
-      - name: Deterministic source package and clean-room extraction
+      - name: Audit exact oracle output
+        run: make lean-oracle
+      - name: Non-Lean verification, deterministic package, and clean-room extraction
         run: make package-determinism
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

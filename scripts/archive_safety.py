@@ -10,24 +10,68 @@ from pathlib import Path, PurePosixPath
 
 MAX_MEMBER_BYTES = 10 * 1024 * 1024
 MAX_TOTAL_BYTES = 50 * 1024 * 1024
+WINDOWS_FORBIDDEN_CHARS = frozenset('<>:"|?*')
+WINDOWS_RESERVED_NAMES = frozenset(
+    {"con", "prn", "aux", "nul", "clock$", "conin$", "conout$"}
+    | {f"com{number}" for number in range(1, 10)}
+    | {f"lpt{number}" for number in range(1, 10)}
+)
+
+
+def _validated_portable_path(raw_name: str) -> PurePosixPath:
+    if unicodedata.normalize("NFC", raw_name) != raw_name:
+        raise ValueError(f"non-NFC archive path: {raw_name!r}")
+    name = PurePosixPath(raw_name)
+    if (
+        not raw_name
+        or name.is_absolute()
+        or raw_name != name.as_posix()
+        or any(part in {"", ".", ".."} for part in name.parts)
+        or "\\" in raw_name
+        or any(unicodedata.category(char) == "Cc" for char in raw_name)
+    ):
+        raise ValueError(f"unsafe archive path: {raw_name!r}")
+    for part in name.parts:
+        stem = part.split(".", 1)[0].casefold()
+        if (
+            part.endswith((" ", "."))
+            or any(char in WINDOWS_FORBIDDEN_CHARS for char in part)
+            or stem in WINDOWS_RESERVED_NAMES
+        ):
+            raise ValueError(f"non-portable archive path: {raw_name!r}")
+    return name
 
 
 def validated_members(archive: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
     infos = [info for info in archive.infolist() if not info.is_dir()]
-    names = [info.filename for info in infos]
-    if len(names) != len(set(names)):
+    raw_names = [info.filename for info in infos]
+    if len(raw_names) != len(set(raw_names)):
         raise ValueError("duplicate ZIP member name")
-    normalised = [unicodedata.normalize("NFC", name) for name in names]
-    if len(normalised) != len(set(normalised)):
-        raise ValueError("Unicode-normalization collision in ZIP member names")
-    folded = [name.casefold() for name in normalised]
+
+    names = [_validated_portable_path(raw_name) for raw_name in raw_names]
+    folded = [tuple(part.casefold() for part in name.parts) for name in names]
     if len(folded) != len(set(folded)):
         raise ValueError("case-insensitive collision in ZIP member names")
+
+    portable_prefixes: dict[tuple[str, ...], tuple[str, ...]] = {}
+    file_paths = {name.parts for name in names}
+    for name in names:
+        parts = name.parts
+        for length in range(1, len(parts) + 1):
+            prefix = parts[:length]
+            key = tuple(part.casefold() for part in prefix)
+            previous = portable_prefixes.get(key)
+            if previous is not None and previous != prefix:
+                raise ValueError(
+                    "case-insensitive path-component collision in ZIP: "
+                    f"{'/'.join(previous)!r} and {'/'.join(prefix)!r}"
+                )
+            portable_prefixes[key] = prefix
+        if any(parts[:length] in file_paths for length in range(1, len(parts))):
+            raise ValueError(f"file/directory collision in ZIP path: {name}")
+
     total = 0
-    for info, raw_name in zip(infos, normalised):
-        name = PurePosixPath(raw_name)
-        if name.is_absolute() or ".." in name.parts or "\\" in raw_name or "\x00" in raw_name:
-            raise ValueError(f"unsafe archive path: {name}")
+    for info, name in zip(infos, names):
         mode = (info.external_attr >> 16) & 0xFFFF
         kind = stat.S_IFMT(mode)
         if kind == stat.S_IFLNK:
@@ -50,7 +94,7 @@ def safe_extract(archive: zipfile.ZipFile, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     infos = validated_members(archive)
     for info in infos:
-        relative = PurePosixPath(unicodedata.normalize("NFC", info.filename))
+        relative = _validated_portable_path(info.filename)
         target = destination.joinpath(*relative.parts)
         resolved_parent = target.parent.resolve()
         if destination != resolved_parent and destination not in resolved_parent.parents:

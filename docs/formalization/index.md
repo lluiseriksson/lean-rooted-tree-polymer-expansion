@@ -22,13 +22,15 @@ The machine-readable correspondence is
 
 ## Proof trust
 
-The oracle command
+After the CI action has built the package, the oracle command
 
 ```bash
-lake env lean MarkedRootedClosure/Oracle.lean
+make lean-oracle
 ```
 
-prints the axioms used by the three public endpoints. CI rejects `sorry`,
+prints and audits the axioms used by the three public endpoints. A full local
+build plus oracle is `make lean`; both local phases are process-group
+supervised. CI rejects `sorry`,
 `admit`, `sorryAx`, and project-local axiom declarations. The intended output
 contains only the standard classical axioms inherited from Lean/Mathlib:
 

@@ -19,7 +19,7 @@ class ReferenceAuditTests(unittest.TestCase):
     def test_missing_doi_is_detected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             copy = Path(tmp) / 'repo'
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', '.lake', 'site', 'release', 'docs/generated', '__pycache__'))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', '.lake', 'site', 'release', '.venv*', '__pycache__', '.pytest_cache', '.mypy_cache'))
             rendered = copy / 'docs' / 'paper' / 'references.md'
             rendered.write_text(
                 rendered.read_text(encoding='utf-8').replace(

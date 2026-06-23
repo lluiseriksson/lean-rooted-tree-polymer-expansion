@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/provenance.schema.json",
-  "title": "Deterministic in-toto/SLSA release provenance statement",
+  "title": "Deterministic, non-execution-bound in-toto/SLSA release declaration",
   "type": "object",
   "additionalProperties": false,
   "required": ["_type", "subject", "predicateType", "predicate"],
@@ -10,20 +10,9 @@
     "subject": {
       "type": "array",
       "minItems": 4,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["name", "digest"],
-        "properties": {
-          "name": {"type": "string", "minLength": 1},
-          "digest": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["sha256"],
-            "properties": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
-          }
-        }
-      }
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/artifact"}
     },
     "predicateType": {"const": "https://slsa.dev/provenance/v1"},
     "predicate": {
@@ -33,28 +22,140 @@
       "properties": {
         "buildDefinition": {
           "type": "object",
+          "additionalProperties": false,
           "required": ["buildType", "externalParameters", "internalParameters", "resolvedDependencies"],
           "properties": {
-            "buildType": {"type": "string", "format": "uri"},
-            "externalParameters": {"type": "object"},
-            "internalParameters": {"type": "object"},
-            "resolvedDependencies": {"type": "array", "minItems": 4}
-          },
-          "additionalProperties": false
+            "buildType": {
+              "const": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/build-types/source-release-v1"
+            },
+            "externalParameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["repository", "version", "releaseDate", "publicationModel", "releaseProfile"],
+              "properties": {
+                "repository": {"type": "string", "format": "uri"},
+                "version": {"type": "string", "minLength": 1},
+                "releaseDate": {"type": "string", "format": "date"},
+                "publicationModel": {"type": "string", "minLength": 1},
+                "releaseProfile": {"type": "string", "minLength": 1}
+              }
+            },
+            "internalParameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["releaseRecipe", "requiredExternalGates", "sourceInputs"],
+              "properties": {
+                "releaseRecipe": {"const": ["make package-determinism"]},
+                "requiredExternalGates": {
+                  "const": [
+                    "leanprover/lean-action build MarkedRootedClosure",
+                    "make lean-oracle"
+                  ]
+                },
+                "sourceInputs": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "python_lock",
+                    "theorem_manifest",
+                    "proof_dag",
+                    "paper_manifest",
+                    "actions_manifest",
+                    "citation_schema",
+                    "source_manifest"
+                  ],
+                  "properties": {
+                    "python_lock": {"$ref": "#/$defs/sourceInput"},
+                    "theorem_manifest": {"$ref": "#/$defs/sourceInput"},
+                    "proof_dag": {"$ref": "#/$defs/sourceInput"},
+                    "paper_manifest": {"$ref": "#/$defs/sourceInput"},
+                    "actions_manifest": {"$ref": "#/$defs/sourceInput"},
+                    "citation_schema": {"$ref": "#/$defs/sourceInput"},
+                    "source_manifest": {"$ref": "#/$defs/sourceInput"}
+                  }
+                }
+              }
+            },
+            "resolvedDependencies": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 5,
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/dependency"}
+            }
+          }
         },
         "runDetails": {
           "type": "object",
+          "additionalProperties": false,
           "required": ["builder", "metadata"],
           "properties": {
             "builder": {
               "type": "object",
+              "additionalProperties": false,
               "required": ["id"],
-              "properties": {"id": {"type": "string", "format": "uri"}},
-              "additionalProperties": false
+              "properties": {
+                "id": {
+                  "const": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/builders/deterministic-source-tooling-v1"
+                }
+              }
             },
-            "metadata": {"type": "object"}
-          },
-          "additionalProperties": false
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["invocationId", "reproducible", "executionBound", "hostedAttestationRequired"],
+              "properties": {
+                "invocationId": {"type": "string", "pattern": "^deterministic-source-release-v.+$"},
+                "reproducible": {"const": true},
+                "executionBound": {"const": false},
+                "hostedAttestationRequired": {"const": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "digest"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "digest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sha256"],
+          "properties": {
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    },
+    "sourceInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "digest"],
+      "properties": {
+        "uri": {"type": "string", "minLength": 1},
+        "digest": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+          }
         }
       }
     }

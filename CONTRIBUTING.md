@@ -6,9 +6,12 @@ publication, and reproducibility boundaries.
 ## Required checks
 
 ```bash
-make static
-make verify
+make verify-nonlean
 ```
+
+GitHub Actions performs the authoritative single Lean build and exact oracle.
+For deliberate local supporting evidence, use `make lean`; its supervisor
+cleans the complete Lean/Lake process tree on timeout or interruption.
 
 A theorem change must include:
 

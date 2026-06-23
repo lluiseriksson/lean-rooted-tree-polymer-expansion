@@ -15,7 +15,7 @@ scholarly article, its Lean 4 companion, theorem provenance, reproducibility
 instructions, CI, GitHub Pages deployment, and deterministic release tooling.
 There is no separately maintained manuscript PDF.
 
-**Current artifact release:** `v2.4.0`.
+**Current artifact release:** `v2.4.2`.
 
 [**Read the integrated article**](https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/paper/)
 · [**Open the formalization map**](https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/formalization/)
@@ -72,31 +72,51 @@ boundary is maintained in [`docs/artifact/scope.md`](docs/artifact/scope.md).
 
 ## Verification
 
-Requirements: Git, a POSIX shell, Python 3.11 or newer, and `elan`/Lean. The
-committed `lake-manifest.json` is authoritative; ordinary verification does not
-run `lake update`.
+Requirements: Git, a POSIX shell, Python 3.11 or newer, and `elan`/Lean for an
+optional local kernel run. The committed `lake-manifest.json` is authoritative;
+ordinary verification does not run `lake update`.
+
+For local source-package review, install the exact documentation environment and
+run the complete non-Lean preflight:
 
 ```bash
 make docs-setup
-make verify
+make verify-nonlean
+make package-determinism
 ```
+
+The authoritative Lean kernel build runs in GitHub Actions on the pinned Linux
+environment. The Lean action performs one explicit `MarkedRootedClosure` build,
+runs the pinned Lean environment checker, then `make lean-oracle` checks the
+exact axiom set. A maintainer who deliberately wants the full local gate can run
+`make lean` or `make verify`; these targets use a process-tree supervisor that
+terminates all Lean/Lake descendants on timeout, interrupt, or parent-process
+loss.
 
 Useful targets:
 
 ```bash
-make test          # focused unit tests for repository tooling
-make syntax        # Python byte-compile and shell syntax validation
-make lean          # compile wrappers and audit theorem axioms
-make docs          # strict MkDocs build and generated one-page article
-make static        # identity, locks, theorem map, metadata, links, workflows
-make package       # ZIP, SBOMs, build info, in-toto provenance, release index
+make test              # focused unit tests for repository tooling
+make syntax            # Python byte-compile and shell syntax validation
+make verify-nonlean    # tests, strict docs, metadata, links, and static audits
+make preflight         # alias of verify-nonlean
+make lean-build        # supervised local wrapper compilation
+make lean-oracle       # supervised exact-axiom oracle audit
+make lean              # local build plus oracle; CI remains authoritative
+make docs              # strict MkDocs build and generated one-page article
+make static            # identity, locks, source manifest, metadata, workflows
+make manifest          # explicitly refresh and review MANIFEST.sha256
+make package           # ZIP, SBOMs, build info, provenance, release index
 make package-determinism # build the complete evidence set twice byte-for-byte
-make smoke-release # safely extract the ZIP and audit it in a temporary tree
-make release       # complete Lean verification plus deterministic packaging
-make lock-refresh  # explicit dependency-lock refresh; review the full diff
+make smoke-release     # safely extract the ZIP and audit it in a temporary tree
+make release           # full local Lean verification plus deterministic package
+make lock-refresh      # supervised dependency-lock refresh; review the full diff
 ```
 
-The exact pass criteria are documented in the
+The supervisor defaults are one hour for the build, ten minutes for the oracle,
+and thirty minutes for an explicit lock refresh. They can be adjusted with
+`LEAN_BUILD_TIMEOUT`, `LEAN_ORACLE_TIMEOUT`, and `LAKE_UPDATE_TIMEOUT` without
+bypassing descendant cleanup. The exact pass criteria are documented in the
 [verification contract](docs/artifact/verification-contract.md). Automated
 agents can begin with [`docs/llms.txt`](docs/llms.txt).
 
@@ -104,10 +124,11 @@ agents can begin with [`docs/llms.txt`](docs/llms.txt).
 
 A tagged release contains a deterministic source archive, SHA-256 sidecars,
 SPDX 2.3 and CycloneDX 1.5 SBOMs, deterministic build information, a
-machine-readable release index, aggregate checksums, and GitHub provenance
-attestations. The evidence records bind the archive, SBOMs, proof environment, complete
-Python dependency lock, proof DAG, source manifests, and deterministic in-toto
-Statement v1 / SLSA provenance by size and digest.
+machine-readable release index, aggregate checksums, a non-execution-bound
+in-toto/SLSA declaration, and separate hosted GitHub provenance attestations.
+Together the records bind the archive, SBOMs, proof environment, complete
+Python dependency lock, proof DAG, source manifests, declared release recipe,
+and execution evidence by size and digest.
 
 See [`docs/artifact/release-evidence.md`](docs/artifact/release-evidence.md).
 

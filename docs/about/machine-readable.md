@@ -18,5 +18,7 @@ The authoritative machine-readable records remain:
 or verification contract.
 
 Generated releases add build-info schema v2, a release evidence index schema
-v2, dual SBOMs, and an in-toto Statement v1 / SLSA provenance statement. These
-files are generated evidence and are not tracked in the source tree.
+v2, dual SBOMs, and a deterministic in-toto Statement v1 / SLSA declaration.
+That local declaration records `executionBound: false`; tagged releases carry
+separate hosted GitHub attestations as the execution-bound layer. These files
+are generated evidence and are not tracked in the source tree.

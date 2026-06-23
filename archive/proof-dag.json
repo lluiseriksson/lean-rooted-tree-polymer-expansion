@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "nodes": [
     {
       "id": "upstream.rooted-profile",

@@ -3,14 +3,30 @@ SHELL := /bin/bash
 
 PYTHON ?= python3
 ORACLE_LOG ?= .oracle.log
+LEAN_BUILD_TIMEOUT ?= 3600
+LEAN_ORACLE_TIMEOUT ?= 600
+LAKE_UPDATE_TIMEOUT ?= 1800
+LAKE_CLEAN_TIMEOUT ?= 300
 
-.PHONY: all verify prepare test syntax lean docs docs-setup docs-serve static \
-        lock-refresh manifest evidence package package-determinism \
-        smoke-release verify-package release clean
+.PHONY: all verify verify-nonlean preflight prepare test syntax lean lean-build \
+        lean-oracle docs docs-setup docs-serve static lock-refresh manifest \
+        evidence package package-determinism smoke-release verify-package \
+        release clean
 
 all: verify
 
-verify: test syntax lean docs static
+# Recursive invocations keep the gates ordered even when a caller supplies -j.
+verify:
+	$(MAKE) verify-nonlean
+	$(MAKE) lean
+
+verify-nonlean:
+	$(MAKE) test
+	$(MAKE) syntax
+	$(MAKE) docs
+	$(MAKE) static
+
+preflight: verify-nonlean
 
 prepare:
 	$(PYTHON) scripts/assemble_paper.py
@@ -23,16 +39,19 @@ syntax:
 	bash -n scripts/*.sh
 
 lean:
-	lake build MarkedRootedClosure
-	@set -o pipefail; lake env lean MarkedRootedClosure/Oracle.lean | tee $(ORACLE_LOG)
-	$(PYTHON) scripts/check_oracle_output.py $(ORACLE_LOG)
-	@rm -f $(ORACLE_LOG)
-	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
-		git diff --exit-code -- lake-manifest.json; \
-	fi
+	$(MAKE) lean-build
+	$(MAKE) lean-oracle
+
+lean-build:
+	LEAN_BUILD_TIMEOUT="$(LEAN_BUILD_TIMEOUT)" \
+		$(PYTHON) scripts/run_lean_gate.py build
+
+lean-oracle:
+	LEAN_ORACLE_TIMEOUT="$(LEAN_ORACLE_TIMEOUT)" \
+		$(PYTHON) scripts/run_lean_gate.py oracle --oracle-log "$(ORACLE_LOG)"
 
 lock-refresh:
-	lake update
+	$(PYTHON) scripts/process_runner.py --timeout "$(LAKE_UPDATE_TIMEOUT)" -- lake update
 	$(PYTHON) scripts/check_lake_lock.py
 	@printf '%s\n' 'Review the full lake-manifest.json diff before committing.'
 
@@ -57,6 +76,7 @@ static: prepare
 	$(PYTHON) scripts/check_version_consistency.py
 	$(PYTHON) scripts/check_python_lock.py
 	$(PYTHON) scripts/check_lake_lock.py
+	$(PYTHON) scripts/check_source_manifest.py
 	$(PYTHON) scripts/check_paper_manifest.py
 	$(PYTHON) scripts/check_theorem_manifest.py
 	$(PYTHON) scripts/check_proof_dag.py
@@ -82,13 +102,17 @@ evidence:
 	$(PYTHON) scripts/generate_provenance.py
 	$(PYTHON) scripts/generate_release_index.py
 
-package: test syntax static docs manifest
+package:
+	$(MAKE) verify-nonlean
+	$(MAKE) manifest
 	$(PYTHON) scripts/make_release.py
 	$(MAKE) evidence
 	$(PYTHON) scripts/verify_release.py
 	$(PYTHON) scripts/smoke_test_release.py
 
-package-determinism: test syntax static docs manifest
+package-determinism:
+	$(MAKE) verify-nonlean
+	$(MAKE) manifest
 	$(PYTHON) scripts/check_release_determinism.py
 	$(MAKE) evidence
 	$(PYTHON) scripts/verify_release.py
@@ -99,9 +123,11 @@ smoke-release:
 
 verify-package: package-determinism
 
-release: lean package-determinism
+release:
+	$(MAKE) lean
+	$(MAKE) package-determinism
 
 clean:
-	lake clean || true
+	-$(PYTHON) scripts/process_runner.py --timeout "$(LAKE_CLEAN_TIMEOUT)" -- lake clean
 	rm -rf site release .venv .venv-docs docs/generated $(ORACLE_LOG) __pycache__
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +

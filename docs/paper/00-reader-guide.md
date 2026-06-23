@@ -15,7 +15,7 @@ target composition.
 `MarkedRootedClosure/PaperTheorems.lean`.
 
 **Artifact path.** Read Section 12 and the
-[reproducibility guide](../artifact/reproducibility.md), then run `make verify`.
+[reproducibility guide](../artifact/reproducibility.md), then run `make verify-nonlean`; inspect the green GitHub Actions Lean gate separately.
 
 ## Main logical chain
 

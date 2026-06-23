@@ -75,8 +75,16 @@
       "type": "object",
       "required": ["source_commands", "axiom_policy", "standalone_pdf_tracked", "ci_python"],
       "properties": {
-        "source_commands": {"type": "array", "items": {"type": "string"}},
-        "axiom_policy": {"type": "array", "items": {"type": "string"}},
+        "source_commands": {
+          "const": [
+            "make verify-nonlean",
+            "leanprover/lean-action build MarkedRootedClosure",
+            "make lean-oracle",
+            "make package-determinism",
+            "make smoke-release"
+          ]
+        },
+        "axiom_policy": {"const": ["propext", "Classical.choice", "Quot.sound"]},
         "standalone_pdf_tracked": {"const": false},
         "ci_python": {"const": "3.12"}
       },

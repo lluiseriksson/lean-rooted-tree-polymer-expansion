@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 import tempfile
 import zipfile
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem
+from process_runner import run_checked
 from archive_safety import safe_extract
 from verify_release import verify_zip
 
@@ -30,15 +30,12 @@ def main() -> None:
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         for command in commands:
             print('clean-room:', ' '.join(command), flush=True)
-            try:
-                subprocess.run(
-                    command, cwd=checkout, env=env, check=True, timeout=360
-                )
-            except subprocess.TimeoutExpired as exc:
-                raise SystemExit(
-                    'clean-room command timed out after 360 seconds: '
-                    + ' '.join(command)
-                ) from exc
+            run_checked(
+                command,
+                cwd=checkout,
+                env=env,
+                timeout=360,
+            )
     print(f"clean-room source archive smoke test: OK ({zip_path.name})")
 
 

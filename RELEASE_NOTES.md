@@ -1,56 +1,64 @@
-# Release notes: v2.4.0
+# Release notes: v2.4.2
 
-Version 2.4.0 is a dependency-consistency, proof-traceability, accessibility,
-and release-provenance hardening release. It preserves the exact three public
-Lean theorem statements, upstream proof commit, Lean toolchain, Mathlib commit,
-and mathematical claims boundary.
+Version 2.4.2 is an execution-safety and CI-efficiency maintenance release. It
+preserves the exact three public Lean theorem statements, upstream proof commit,
+Lean toolchain, Mathlib commit, oracle boundary, and mathematical claims boundary
+from v2.4.1.
 
-## Critical repair
+## Supervised Lean/Lake execution
 
-The previous documentation environment simultaneously requested
-`cffconvert==2.0.0` and `jsonschema==4.26.0`, although that CFF tool requires an
-older incompatible JSON Schema line. This release removes the conflicting tool,
-validates `CITATION.cff` against a committed project CFF profile, and uses one
-modern JSON Schema implementation throughout. The unnecessary MkDocs minifier
-chain has also been removed.
+Local Lean verification now runs through a dependency-free supervisor. Every
+command receives its own process group. A timeout, terminal interrupt, or loss
+of the invoking parent terminates the complete descendant tree, first
+cooperatively and then forcibly if necessary. This prevents timed-out `lake` or
+`lean` children from continuing to consume CPU and memory after their caller has
+exited.
 
-## Added
+Cleanup is checked independently of the immediate child: even if that child
+exits on `SIGTERM` while a worker ignores it, the remaining process group is
+forcibly removed. A command that returns success while leaving a background
+descendant is rejected. The explicit lock-refresh and best-effort clean targets
+use the same supervisor.
 
-- `requirements-docs.lock`, a fully resolved exact transitive Python lock used
-  by local setup, Docker, the dev container, and every documentation workflow;
-- direct/transitive dependency-scope records in both SPDX 2.3 and CycloneDX 1.5
-  SBOMs;
-- `archive/proof-dag.json` and a rendered proof dependency graph linking the
-  three public wrappers to their pinned upstream producers;
-- version-consistency, Python-lock, proof-DAG, accessibility, syntax, archive
-  extraction, metadata-profile, and provenance regression tests;
-- deterministic in-toto Statement v1 / SLSA provenance, checksum sidecar, and
-  release-index entry;
-- a bounded safe ZIP extractor used by the clean-room smoke test.
+The supervisor also snapshots `lake-manifest.json` before each build or oracle
+phase and rejects any byte-level lock drift, including in source archives that
+do not contain Git metadata. Partial oracle output is retained on failure and
+removed after a successful exact-axiom audit.
 
-## Release verification
+## One Lean build per CI job
 
-The verifier now checks archive safety and completeness, archive-local manifest
-digests, theorem and dependency pins, all locked Python packages in both SBOMs,
-SBOM direct/transitive scope, build-info schema v2, release-index schema v2,
-provenance subjects and resolved dependencies, aggregate checksums, and source
-evidence digests. The full evidence set is built twice and must be byte-for-byte
-identical.
+The pinned `leanprover/lean-action` invocation is now configured explicitly with
+`auto-config: false`, `build: true`, `build-args: MarkedRootedClosure`, and
+`leanchecker: true`. GitHub Actions therefore performs the kernel build once,
+runs the pinned environment checker, saves the resulting cache, and then runs
+only `make lean-oracle`. Previous workflows allowed the action's automatic build
+and `make lean` to compile the same target twice.
 
-## Release contents
+The static/docs, Pages, maintenance, and release workflows use the new
+`make verify-nonlean` entrypoint. Local reviewers can run the same non-Lean
+preflight and leave the authoritative kernel gate to the expected cached Linux
+CI environment.
 
-- complete integrated article under `docs/paper/`;
-- three stable Lean publication endpoints and exact axiom oracle;
-- theorem manifest, proof DAG, source excerpts, statement fingerprints, and
-  exact upstream Git blob IDs;
-- exact Lean, Mathlib, elan-installer, GitHub Actions, and Python dependency
-  pins;
-- deterministic source ZIP, per-file sidecars, aggregate checksums;
-- SPDX 2.3 and CycloneDX 1.5 SBOMs;
-- build information, in-toto/SLSA provenance, and machine-readable release
-  evidence index;
-- strict MkDocs/Pages documentation with accessibility and internal-link
-  audits.
+## Process-safe release tooling
+
+The clean-room archive command and deterministic evidence builder now use the
+same whole-process-tree supervision. Composite Make targets invoke their stages
+sequentially even when a caller supplies `-j`, avoiding races between generated
+article output and static checks. The transient `.oracle.log` is excluded from
+the source manifest while remaining available after a failed oracle audit.
+
+## Provenance boundary
+
+The deterministic in-toto statement now identifies itself as a reproducible
+source-tooling declaration with `executionBound: false` and explicitly requires
+a hosted attestation. It binds subjects, dependencies, and the declared release
+recipe without claiming that a particular GitHub release workflow already ran.
+GitHub's hosted build-provenance attestations remain the execution-bound evidence
+for tagged artifacts.
+
+The committed JSON Schema and release verifier now enforce that distinction,
+including the exact builder identity, source-input digests, five resolved
+dependencies, release recipe, and two required external Lean gates.
 
 ## Mathematical scope
 

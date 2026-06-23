@@ -20,7 +20,14 @@ class ProofDagTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             copy = Path(temp) / "repo"
             import shutil
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".lake", "site", "release", "__pycache__"))
+            shutil.copytree(
+                ROOT,
+                copy,
+                ignore=shutil.ignore_patterns(
+                    ".git", ".lake", "site", "release", ".venv*",
+                    "__pycache__", ".pytest_cache", ".mypy_cache"
+                ),
+            )
             path = copy / "archive/proof-dag.json"
             data = json.loads(path.read_text())
             data["edges"].append({
