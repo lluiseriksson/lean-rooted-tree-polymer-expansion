@@ -83,5 +83,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             release/*.zip release/*.sha256 \
             release/*.spdx.json release/*.cdx.json release/*.buildinfo.json \
-            release/*.intoto.jsonl release/*.release.json release/*.checksums.sha256 \
+            release/*.intoto.jsonl release/*.release.json \
             --verify-tag --generate-notes
