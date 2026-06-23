@@ -88,11 +88,9 @@ def main() -> None:
     project_path = ROOT / "project.json"
     project["repository_owner"] = args.owner
     project["repository_slug"] = args.slug
-    if args.slug == project.get("recommended_repository_slug"):
-        project["rename_status"] = "adopted"
-        project["previous_repository_slug"] = old_slug
-    else:
-        project["rename_status"] = "proposed"
+    project["recommended_repository_slug"] = args.slug
+    project["rename_status"] = "adopted"
+    project["previous_repository_slug"] = old_slug
     changed.append(project_path.relative_to(ROOT))
     if args.apply:
         project_path.write_text(
@@ -109,7 +107,7 @@ def main() -> None:
     if not args.apply:
         print("No files were changed. Re-run with --apply after the GitHub rename.")
     else:
-        print("Run: make static && make docs")
+        print("Run: make test && make static && make docs")
 
 
 if __name__ == "__main__":

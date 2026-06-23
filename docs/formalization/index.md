@@ -5,9 +5,9 @@ transparent alias of a proved theorem in the pinned upstream repository.
 
 | Public theorem | Mathematical role | Upstream theorem | Article section |
 |---|---|---|---|
-| `normalizedRootedChildFactorialTreeBound` | Closes complete-tree shape entropy by $4^n$ after the Ursell normalization | `YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow` | [Rooted tree profile](../paper/03-rooted-tree-profile.md) |
-| `markedRootLeafGeometricBound` | Bounds the marked-root second-Ursell leaf sum by $M(4M^2)^n$ | `YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight` | [Marked-root closure](../paper/06-marked-root-closure.md) |
-| `targetPreservingWeightedTreeBound` | Extracts exact-target modified-metric decay before applying the rooted overcount | `YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation` | [Target-preserving decay](../paper/07-target-preserving-decay.md) |
+| `MarkedRootedClosure.normalizedRootedChildFactorialTreeBound` | Closes complete-tree shape entropy by $4^n$ after the Ursell normalization | `YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow` | [Rooted tree profile](../paper/03-rooted-tree-profile.md) |
+| `MarkedRootedClosure.markedRootLeafGeometricBound` | Bounds the marked-root second-Ursell leaf sum by $M(4M^2)^n$ | `YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight` | [Marked-root closure](../paper/06-marked-root-closure.md) |
+| `MarkedRootedClosure.targetPreservingWeightedTreeBound` | Extracts exact-target modified-metric decay before applying the rooted overcount | `YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation` | [Target-preserving decay](../paper/07-target-preserving-decay.md) |
 
 ## Stable package interface
 
@@ -50,8 +50,21 @@ separate, explicit maintenance operation.
 | Mathlib | `07642720480157414db592fa85b626dafb71355b` |
 | Lean | `v4.29.0-rc6` |
 
-## API stability under repository rename
+## Repository identity and API stability
 
-The recommended repository rename changes URLs and release archive names only.
-It does not rename the Lean package or namespace, preserving citations and
-downstream imports.
+The public repository rename is complete. The GitHub slug and release archive
+names use `lean-rooted-tree-polymer-expansion`, while the Lean package and
+namespace remain `MarkedRootedClosure`. This separates public discoverability
+from formal API stability and preserves downstream imports.
+
+## Statement-fingerprint policy
+
+The public declarations are fingerprinted after removing comments and
+normalizing whitespace, while excluding proof terms. The resulting SHA-256
+values are stored in `archive/theorem-manifest.json` and recomputed during the
+static audit. This catches semantic changes to binders, assumptions, constants,
+or conclusions even if theorem names and upstream references remain unchanged.
+
+The manifest also records the exact Git blob IDs of the two upstream Lean source
+files. The fingerprint and blob checks complement, but never replace, kernel
+compilation.

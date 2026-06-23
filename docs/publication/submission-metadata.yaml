@@ -1,7 +1,7 @@
 title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
 author: "Lluis Eriksson"
-date: "2026-06-22"
-version: "2.1.0"
+date: "2026-06-23"
+version: "2.4.0"
 article_type: "Formalization / rigorous mathematical physics"
 publication_model: "Integrated repository documentation"
 keywords:

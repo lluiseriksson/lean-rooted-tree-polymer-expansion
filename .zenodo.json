@@ -1,13 +1,11 @@
 {
-  "title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
-  "upload_type": "software",
-  "publication_date": "2026-06-22",
-  "description": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes. The repository contains the integrated article, Lean 4 theorem aliases, exact proof-source locks, deterministic release tooling, and an SPDX software bill of materials. Code and tooling are AGPL-3.0-or-later; original documentation and figures are CC BY 4.0.",
+  "access_right": "open",
   "creators": [
     {
       "name": "Eriksson, Lluis"
     }
   ],
+  "description": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes. The repository contains the integrated article, Lean 4 theorem aliases, exact proof-source and dependency locks, a machine-readable proof DAG, safe clean-room archive verification, SPDX 2.3 and CycloneDX 1.5 SBOMs, deterministic build information, and in-toto/SLSA provenance. Code and tooling are AGPL-3.0-or-later; original documentation and figures are CC BY 4.0.",
   "keywords": [
     "Lean 4",
     "cluster expansion",
@@ -15,6 +13,7 @@
     "rooted tree",
     "constructive quantum field theory"
   ],
+  "publication_date": "2026-06-23",
   "related_identifiers": [
     {
       "identifier": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME/tree/4e45246aa109671d25fcd01ba1abf7bc3f8506d1",
@@ -22,6 +21,7 @@
       "scheme": "url"
     }
   ],
-  "version": "2.1.0",
-  "access_right": "open"
+  "title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
+  "upload_type": "software",
+  "version": "2.4.0"
 }

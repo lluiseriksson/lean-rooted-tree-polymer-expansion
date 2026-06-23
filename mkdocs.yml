@@ -26,6 +26,7 @@ theme:
     - content.code.copy
     - content.code.annotate
     - content.action.edit
+    - content.action.view
     - search.highlight
     - search.share
     - search.suggest
@@ -48,8 +49,6 @@ theme:
 plugins:
   - search:
       lang: en
-  - minify:
-      minify_html: true
 
 markdown_extensions:
   - admonition
@@ -94,6 +93,8 @@ nav:
       - What this project is: about/overview.md
       - Claims and scope: about/claims.md
       - Notation and terminology: about/notation.md
+      - Citation: about/citation.md
+      - Machine-readable index: about/machine-readable.md
   - Integrated article:
       - Article landing: paper/index.md
       - Continuous reading view: generated/full-article.md
@@ -119,12 +120,16 @@ nav:
   - Formalization:
       - Lean theorem map: formalization/index.md
       - Machine-readable theorem map: artifact/theorem-map.md
+      - Proof dependency graph: artifact/proof-dependency-graph.md
       - Source provenance: artifact/source-provenance.md
       - Build and oracle status: artifact/build-status.md
   - Artifact evaluation:
+      - Verification contract: artifact/verification-contract.md
       - Reproducibility: artifact/reproducibility.md
+      - Release evidence: artifact/release-evidence.md
       - Evaluation guide: artifact/evaluation.md
       - Reviewer FAQ: artifact/reviewer-faq.md
+      - Claims and scope: artifact/scope.md
       - Supply-chain integrity: artifact/supply-chain.md
   - Publication:
       - Editorial positioning: publication/editorial-positioning.md
@@ -134,8 +139,9 @@ nav:
       - Author declarations: publication/author-declarations.md
       - Submission metadata: publication/submission-metadata.md
   - Maintainers:
-      - Rename proposal: maintainers/rename-repository.md
+      - Repository identity history: maintainers/repository-history.md
       - Release playbook: maintainers/release-playbook.md
+      - Repository settings: maintainers/repository-settings.md
       - Agent handoff: maintainers/agent-handoff.md
       - Upload and migration: maintainers/upload-and-migration.md
       - Repository audit: maintainers/repository-audit.md

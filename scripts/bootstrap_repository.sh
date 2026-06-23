@@ -8,7 +8,8 @@ if ! command -v lake >/dev/null 2>&1; then
 fi
 
 python3 -m venv .venv-docs
-.venv-docs/bin/python -m pip install --disable-pip-version-check -r requirements-docs.txt
+.venv-docs/bin/python -m pip install --disable-pip-version-check -r requirements-docs.lock
+.venv-docs/bin/python -m pip check
 python3 scripts/check_lake_lock.py
 python3 scripts/assemble_paper.py
 printf '%s\n' "Bootstrap complete. The committed Lake manifest was not refreshed."

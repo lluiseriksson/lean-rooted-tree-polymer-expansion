@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/citation-cff.schema.json",
+  "title": "Project CITATION.cff profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cff-version",
+    "message",
+    "title",
+    "version",
+    "date-released",
+    "type",
+    "authors",
+    "repository-code",
+    "url",
+    "license",
+    "abstract",
+    "keywords",
+    "preferred-citation"
+  ],
+  "properties": {
+    "cff-version": {"const": "1.2.0"},
+    "message": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "date-released": {"type": "string", "format": "date"},
+    "type": {"const": "software"},
+    "authors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/person"}
+    },
+    "repository-code": {"type": "string", "format": "uri"},
+    "url": {"type": "string", "format": "uri"},
+    "license": {"const": "AGPL-3.0-or-later"},
+    "abstract": {"type": "string", "minLength": 40},
+    "keywords": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "doi": {"type": "string", "minLength": 1},
+    "identifiers": {"type": "array"},
+    "preferred-citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "authors", "year"],
+      "properties": {
+        "type": {"const": "article"},
+        "title": {"type": "string", "minLength": 1},
+        "authors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/person"}
+        },
+        "year": {"type": "integer", "minimum": 1900, "maximum": 2200},
+        "doi": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "$defs": {
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family-names", "given-names"],
+      "properties": {
+        "family-names": {"type": "string", "minLength": 1},
+        "given-names": {"type": "string", "minLength": 1},
+        "orcid": {"type": "string", "format": "uri"}
+      }
+    }
+  }
+}

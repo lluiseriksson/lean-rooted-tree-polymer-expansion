@@ -18,3 +18,5 @@
 10. A repository rename changes URLs and release names only. Keep the stable
     Lean namespace `MarkedRootedClosure` unless a separately versioned API
     migration is explicitly approved.
+
+9. Keep `docs/llms.txt` synchronized with project metadata and the three public theorem endpoints.

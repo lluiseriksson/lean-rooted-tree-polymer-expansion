@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/actions-manifest.schema.json",
+  "title": "GitHub Actions immutable dependency policy",
+  "type": "object",
+  "required": ["schema_version", "policy", "resolved_at", "actions", "labels", "notes"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "policy": {"const": "immutable-commit-shas"},
+    "resolved_at": {"type": "string", "format": "date"},
+    "actions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+    },
+    "labels": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "pattern": "^v[0-9]+$"}
+    },
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

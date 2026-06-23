@@ -1,4 +1,6 @@
+# Direct documentation and metadata dependencies.
+# The fully resolved, exact transitive environment is requirements-docs.lock.
 mkdocs==1.6.1
 mkdocs-material==9.7.6
-mkdocs-minify-plugin==0.8.0
-cffconvert==2.0.0
+jsonschema==4.26.0
+PyYAML==6.0.3

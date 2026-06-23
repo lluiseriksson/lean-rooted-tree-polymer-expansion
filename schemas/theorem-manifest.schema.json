@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/theorem-manifest.schema.json",
+  "title": "Publication theorem manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "version",
+    "publication_model",
+    "proof_dag",
+    "upstream",
+    "wrapper",
+    "oracle_axioms",
+    "endpoints",
+    "claim_boundary",
+    "repository"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 4
+    },
+    "artifact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "publication_model": {
+      "const": "integrated-documentation"
+    },
+    "upstream": {
+      "type": "object",
+      "required": [
+        "repository",
+        "commit",
+        "commit_message",
+        "lean",
+        "mathlib"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "commit_message": {
+          "type": "string"
+        },
+        "lean": {
+          "type": "string"
+        },
+        "mathlib": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wrapper": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "MarkedRootedClosure/PaperTheorems.lean"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "oracle_axioms": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "propext"
+        },
+        {
+          "const": "Classical.choice"
+        },
+        {
+          "const": "Quot.sound"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "endpoints": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "public_name",
+          "qualified_public_name",
+          "upstream_name",
+          "source",
+          "source_blob_sha",
+          "public_signature_sha256",
+          "source_excerpt",
+          "source_excerpt_sha256",
+          "paper_page"
+        ],
+        "properties": {
+          "public_name": {
+            "type": "string"
+          },
+          "qualified_public_name": {
+            "type": "string"
+          },
+          "upstream_name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "pattern": "^YangMills/.+\\.lean$"
+          },
+          "source_blob_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "public_signature_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_excerpt": {
+            "type": "string",
+            "pattern": "^vendor/upstream-excerpts/.+\\.txt$"
+          },
+          "source_excerpt_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "paper_page": {
+            "type": "string",
+            "pattern": "^docs/paper/.+\\.md$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": [
+        "proves_model_specific_raw_yang_mills_activity",
+        "proves_hRpoly",
+        "proves_continuum_limit",
+        "proves_mass_gap"
+      ],
+      "properties": {
+        "proves_model_specific_raw_yang_mills_activity": {
+          "const": false
+        },
+        "proves_hRpoly": {
+          "const": false
+        },
+        "proves_continuum_limit": {
+          "const": false
+        },
+        "proves_mass_gap": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "repository": {
+      "type": "object",
+      "required": [
+        "url",
+        "site",
+        "slug"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "site": {
+          "type": "string",
+          "format": "uri"
+        },
+        "slug": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "proof_dag": {
+      "const": "archive/proof-dag.json"
+    }
+  },
+  "additionalProperties": false
+}

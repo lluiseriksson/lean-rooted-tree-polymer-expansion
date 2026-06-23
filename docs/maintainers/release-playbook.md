@@ -20,7 +20,15 @@ metadata changes unexpectedly during verification.
 - Confirm that no theorem claim has expanded beyond the source proof.
 - Re-read the claims boundary and limitations pages.
 
-## 3. Audit publication metadata
+## 3. Set and audit the release version
+
+Use the structured updater rather than global search-and-replace:
+
+```bash
+python3 scripts/bump_version.py 2.4.0 2026-06-23
+```
+
+Then write the changelog entry and run:
 
 ```bash
 make static
@@ -30,32 +38,35 @@ Check the version and date in `project.json`, `CITATION.cff`, CodeMeta, Zenodo
 metadata, submission metadata, changelog, and release notes. Do not insert a DOI
 before the archive has minted it.
 
-## 4. Build the deterministic artifact
+## 4. Build deterministic release evidence
 
 ```bash
-make package
+make package-determinism
 ```
 
-This produces a source ZIP, SHA-256 sidecar, and SPDX 2.3 JSON SBOM in
-`release/`. The release script runs twice in CI and requires byte-for-byte
-identical archives.
+This produces a source ZIP, per-file and aggregate checksums, SPDX 2.3 and
+CycloneDX 1.5 SBOMs, deterministic build information, and a machine-readable
+release index in `release/`. It also extracts the ZIP into a temporary
+clean-room tree and reruns the dependency-free audits.
 
 ## 5. Push and wait for CI
 
-Push the release commit without a tag. Wait for both the Lean verification and
-documentation workflows to complete successfully. Inspect the Pages deployment.
+Push the release commit without a tag. Wait for Lean verification,
+documentation, deterministic packaging, and clean-room archive checks. Inspect
+the Pages deployment.
 
 ## 6. Tag and publish
 
 Create a signed or annotated tag only after the clean CI run:
 
 ```bash
-git tag -s v2.1.0 -m "v2.1.0 publication-hardening release"
-git push origin v2.1.0
+git tag -s v2.4.0 -m "v2.4.0 traceability and release-integrity release"
+git push origin v2.4.0
 ```
 
-The release workflow rebuilds the artifact, attests provenance, and publishes
-the ZIP, checksum, and SBOM.
+The release workflow rebuilds the artifact, verifies tag/version agreement,
+attests hosted provenance, and publishes the ZIP, sidecars, both SBOMs, build
+info, local in-toto provenance, release index, and aggregate checksums.
 
 ## 7. Archive and cite
 

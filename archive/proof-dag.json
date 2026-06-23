@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
+  "version": "2.4.0",
+  "nodes": [
+    {
+      "id": "upstream.rooted-profile",
+      "kind": "upstream-theorem",
+      "qualified_name": "YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow",
+      "source": "YangMills/KP/RootedLeafSummation.lean",
+      "source_blob_sha": "1415686403c26536da8736a9021237773c7467dc"
+    },
+    {
+      "id": "upstream.marked-root",
+      "kind": "upstream-theorem",
+      "qualified_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight",
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
+      "source_blob_sha": "0307d11b95d4385d4ea39067290e7eec929cd7f6"
+    },
+    {
+      "id": "upstream.target-preserving",
+      "kind": "upstream-theorem",
+      "qualified_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation",
+      "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
+      "source_blob_sha": "0307d11b95d4385d4ea39067290e7eec929cd7f6"
+    },
+    {
+      "id": "public.normalized-profile",
+      "kind": "public-endpoint",
+      "qualified_name": "MarkedRootedClosure.normalizedRootedChildFactorialTreeBound"
+    },
+    {
+      "id": "public.marked-root",
+      "kind": "public-endpoint",
+      "qualified_name": "MarkedRootedClosure.markedRootLeafGeometricBound"
+    },
+    {
+      "id": "public.target-preserving",
+      "kind": "public-endpoint",
+      "qualified_name": "MarkedRootedClosure.targetPreservingWeightedTreeBound"
+    }
+  ],
+  "edges": [
+    {
+      "from": "upstream.rooted-profile",
+      "to": "upstream.marked-root",
+      "relation": "combinatorial-input"
+    },
+    {
+      "from": "upstream.marked-root",
+      "to": "upstream.target-preserving",
+      "relation": "target-decay-composition"
+    },
+    {
+      "from": "upstream.rooted-profile",
+      "to": "public.normalized-profile",
+      "relation": "re-exported-as"
+    },
+    {
+      "from": "upstream.marked-root",
+      "to": "public.marked-root",
+      "relation": "re-exported-as"
+    },
+    {
+      "from": "upstream.target-preserving",
+      "to": "public.target-preserving",
+      "relation": "re-exported-as"
+    }
+  ]
+}

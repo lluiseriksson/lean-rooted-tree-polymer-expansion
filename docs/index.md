@@ -5,7 +5,7 @@
 [Read the article](paper/index.md){ .md-button .md-button--primary }
 [Read it as one page](generated/full-article.md){ .md-button }
 [Inspect the Lean theorems](formalization/index.md){ .md-button }
-[Reproduce the build](artifact/reproducibility.md){ .md-button }
+[Verify the artifact](artifact/verification-contract.md){ .md-button }
 
 ![Target-preserving rooted-tree proof pipeline](assets/images/proof-pipeline.png)
 
@@ -33,19 +33,19 @@
 
     ---
 
-    The site separates what the kernel checks from the model-specific and
-    continuum statements that remain outside the artifact.
+    The site separates what the kernel checks from model-specific and continuum
+    statements outside the artifact.
 
     [:octicons-arrow-right-24: Claims and scope](about/claims.md)
 
--   **Reproducible release**
+-   **Release evidence**
 
     ---
 
-    Committed dependency locks, static audits, deterministic ZIP generation,
-    checksums, provenance attestation, and an SPDX SBOM support evaluation.
+    Deterministic ZIP generation, clean-room extraction, SHA-256 sidecars, two
+    SBOM formats, build information, and provenance attestations support review.
 
-    [:octicons-arrow-right-24: Reproduce it](artifact/reproducibility.md)
+    [:octicons-arrow-right-24: Inspect the evidence](artifact/release-evidence.md)
 
 </div>
 
@@ -82,18 +82,18 @@ MarkedRootedClosure.targetPreservingWeightedTreeBound
 
 Each alias is an exact application of a theorem in the pinned upstream proof
 development. See the [endpoint table](formalization/index.md) and the
-[machine-readable theorem manifest](artifact/theorem-map.md).
+[machine-readable theorem map](artifact/theorem-map.md).
 
 ## Trust boundary
 
 This repository proves finite combinatorics and target-sensitive geometric
 composition. It does not prove a model-specific raw Yang--Mills activity,
 `hRpoly`, a continuum limit, reconstruction, or a mass gap. That distinction is
-part of the artifact, not a footnote: see [Claims and scope](about/claims.md).
+part of the artifact: see [Claims and scope](about/claims.md).
 
-## Why the public name should change
+## Stable public identity
 
-The present slug `marked-rooted-closure` is compact but opaque. The recommended
-rename is **`lean-rooted-tree-polymer-expansion`**, which names the formal
-method, the mathematical object, and the implementation language. See the
-[rename proposal](maintainers/rename-repository.md).
+The repository and Pages URL now use the descriptive slug
+`lean-rooted-tree-polymer-expansion`. The Lean package remains
+`MarkedRootedClosure` so downstream imports and theorem references stay stable.
+See [Repository identity history](maintainers/repository-history.md).

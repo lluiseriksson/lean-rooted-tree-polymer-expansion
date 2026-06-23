@@ -1,0 +1,42 @@
+# Lean Rooted-Tree Polymer Expansion
+
+> Machine-checked target-preserving Ursell leaf summation for polymer systems with holes.
+
+Canonical repository: https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion
+Documentation: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/
+Integrated article: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/paper/
+Version: 2.4.0
+
+## Public Lean endpoints
+
+- MarkedRootedClosure.normalizedRootedChildFactorialTreeBound
+- MarkedRootedClosure.markedRootLeafGeometricBound
+- MarkedRootedClosure.targetPreservingWeightedTreeBound
+
+## Immutable proof environment
+
+- Upstream: lluiseriksson/THE-ERIKSSON-PROGRAMME@4e45246aa109671d25fcd01ba1abf7bc3f8506d1
+- Lean: leanprover/lean4:v4.29.0-rc6
+- Mathlib: 07642720480157414db592fa85b626dafb71355b
+
+## Claims boundary
+
+This artifact proves finite rooted-tree combinatorics and target-sensitive geometric composition. It does not prove the model-specific raw Yang--Mills activity estimate, hRpoly, a continuum limit, Osterwalder--Schrader reconstruction, or a mass gap.
+
+## High-value files
+
+- README.md — project entry point and verification commands
+- docs/paper/index.md — integrated article
+- MarkedRootedClosure/PaperTheorems.lean — stable theorem wrappers
+- archive/theorem-manifest.json — theorem names, source blobs, statement fingerprints, and claim boundary
+- archive/proof-dag.json — machine-readable upstream-to-public proof dependency graph
+- archive/UPSTREAM.lock — exact proof and toolchain pins
+- requirements-docs.lock — exact transitive Python documentation environment
+- docs/artifact/verification-contract.md — acceptance criteria
+- docs/artifact/source-provenance.md — proof provenance
+- docs/maintainers/agent-handoff.md — safe modification protocol
+- AGENTS.md — repository-level agent rules
+
+## Verification
+
+Run: make docs-setup && make verify && make package-determinism

@@ -3,27 +3,61 @@
 The artifact uses complementary integrity layers.
 
 1. **Immutable proof dependency.** `lakefile.lean`, `lake-manifest.json`, and
-   `archive/UPSTREAM.lock` agree on the exact upstream and Mathlib revisions.
-2. **Kernel verification.** CI compiles the public wrappers and runs the axiom
-   oracle.
-3. **Claims manifest.** `archive/theorem-manifest.json` maps every public theorem
-   to its upstream name, source file, and article section.
-4. **Source-tree manifest.** `MANIFEST.sha256` records each packaged source file
+   `archive/UPSTREAM.lock` agree on exact upstream and Mathlib revisions.
+2. **Pinned proof-source blobs.** The two upstream files containing the public
+   proofs are recorded by Git blob object ID in the theorem manifest and lock.
+3. **Kernel verification.** CI compiles the public wrappers and requires the
+   exact documented oracle axiom set for every theorem.
+4. **Statement fingerprints.** Whitespace-normalized public Lean declarations
+   are SHA-256 fingerprinted, so binder or conclusion drift cannot hide behind
+   stable theorem names.
+5. **Build-action inventory.** `archive/actions-manifest.json` records every
+   external GitHub Action at a full immutable commit SHA, together with the
+   audited major-tag label from which it was resolved. Mutable or unlisted
+   action refs fail the workflow audit.
+6. **Pinned container bootstrap.** The Dockerfile fetches the elan installer
+   from a fixed commit and verifies its Git blob object ID before execution.
+7. **Source-tree manifest.** `MANIFEST.sha256` records every packaged source file
    other than itself.
-5. **Deterministic archive.** ZIP timestamps, permissions, ordering, and root
+8. **Deterministic archive.** ZIP timestamps, permissions, ordering, and root
    directory are normalized; CI requires two independent builds to match
    byte-for-byte.
-6. **Archive sidecar.** A separate SHA-256 file authenticates the ZIP.
-7. **Software bill of materials.** Packaging emits SPDX 2.3 JSON covering the
-   root artifact, locked Lean packages, and pinned documentation dependencies.
-8. **Hosted provenance.** Tagged releases request a GitHub build-provenance
-   attestation.
-
-The release verifier checks the ZIP sidecar, member integrity, archive-local
-manifest, required files, forbidden paths, and absence of tracked PDF/ZIP
-binaries inside the source archive.
+9. **Archive safety.** Verification rejects traversal, duplicate paths,
+   case-folding and Unicode collisions, symlinks, non-regular entries,
+   encryption, oversized members, unexpected roots, unlisted members, and
+   forbidden manuscript binaries.
+10. **Checksums and release index.** Per-file sidecars, an aggregate checksum
+    file, and a machine-readable release index bind the complete evidence set.
+11. **Dual software bills of materials.** Packaging emits SPDX 2.3 and
+    CycloneDX 1.5 JSON for locked Lean packages, pinned documentation
+    dependencies, and GitHub Actions build dependencies.
+12. **Build-information binding.** Deterministic JSON records the proof
+    environment, verification policy, and archive/SBOM digests.
+13. **Clean-room archive test.** The ZIP is safely extracted into a temporary
+    directory and audited using only its own source tree.
+14. **Scheduled cold-cache verification.** A monthly workflow rebuilds Lean
+    without the GitHub Lean cache and recreates the release evidence.
+15. **Hosted provenance.** Tagged releases request GitHub build-provenance
+    attestations for the source archive and JSON evidence files.
 
 GitHub Actions and Python documentation packages are monitored by Dependabot.
-For institutions requiring immutable action revisions, a maintainer should pin
-reviewed action commits in a dedicated security change and preserve the
-successful workflow URL with the archival metadata.
+The action policy uses full immutable commit SHAs. Dependabot may propose
+updates, but a change is accepted only when workflow files, action manifest,
+SBOMs, and review evidence move together.
+
+## Python dependency lock
+
+The four direct documentation dependencies are declared in
+`requirements-docs.txt`; the exact transitive environment is committed in
+`requirements-docs.lock`. Every environment installs the lock. SBOMs enumerate
+all locked packages and distinguish direct from transitive scope. The audit
+explicitly rejects the obsolete `cffconvert` and minifier package chains.
+
+## Deterministic in-toto provenance
+
+Packaging emits an in-toto Statement v1 with a SLSA provenance v1 predicate.
+Its subjects are the source ZIP, both SBOMs, and build information. Resolved
+dependencies bind the upstream proof commit, Mathlib commit, elan installer Git
+blob, Python lock digest, and GitHub Actions manifest digest. The statement is
+itself checksummed, indexed, rebuilt twice, and independently verified before
+release publication.

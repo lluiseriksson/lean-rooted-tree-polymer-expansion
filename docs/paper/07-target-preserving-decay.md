@@ -28,6 +28,9 @@ $$\mathsf T_n^w(Y)
 
 </div>
 
+!!! tip "Machine-checked endpoint"
+    `MarkedRootedClosure.targetPreservingWeightedTreeBound`
+
 <div class="proof" markdown="1">
 
 *Proof.* The exact-target estimate above extracts the target factor. The fixed-union term for $u$ is at most
