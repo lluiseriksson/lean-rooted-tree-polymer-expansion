@@ -1,32 +1,20 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
-  "name": "Lean Rooted-Tree Polymer Expansion",
   "alternateName": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
-  "version": "2.1.0",
-  "datePublished": "2026-06-22",
-  "programmingLanguage": [
-    "Lean 4",
-    "Python",
-    "Markdown",
-    "YAML"
-  ],
-  "runtimePlatform": "Lean 4.29.0-rc6",
   "author": [
     {
       "@type": "Person",
-      "givenName": "Lluis",
-      "familyName": "Eriksson"
+      "familyName": "Eriksson",
+      "givenName": "Lluis"
     }
   ],
-  "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
   "codeRepository": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion",
-  "issueTracker": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/issues",
   "continuousIntegration": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/actions",
-  "readme": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/blob/main/README.md",
-  "url": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/",
+  "datePublished": "2026-06-23",
+  "description": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes, with integrated article, proof DAG, exact dependency locks, deterministic dual SBOMs, and in-toto/SLSA release provenance.",
   "developmentStatus": "active",
-  "description": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes. Documentation-integrated Lean 4 publication artifact.",
+  "issueTracker": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/issues",
   "keywords": [
     "Lean 4",
     "cluster expansion",
@@ -35,8 +23,21 @@
     "Ursell function",
     "constructive quantum field theory"
   ],
+  "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+  "name": "Lean Rooted-Tree Polymer Expansion",
+  "programmingLanguage": [
+    "Lean 4",
+    "Python",
+    "Markdown",
+    "YAML"
+  ],
+  "readme": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/blob/main/README.md",
+  "runtimePlatform": "Lean 4.29.0-rc6",
   "softwareRequirements": [
     "Lean 4.29.0-rc6",
-    "Mathlib commit 07642720480157414db592fa85b626dafb71355b"
-  ]
+    "Mathlib commit 07642720480157414db592fa85b626dafb71355b",
+    "Python 3.11+ with requirements-docs.lock"
+  ],
+  "url": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/",
+  "version": "2.4.0"
 }

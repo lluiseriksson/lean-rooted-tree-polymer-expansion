@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+"""Validate the adopted repository identity across human and machine metadata."""
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 from project_config import ROOT, load_project, repository_full_name, repository_url, site_url
@@ -12,32 +12,20 @@ version = project["version"]
 repo_full = repository_full_name(project)
 repo = repository_url(project)
 site = site_url(project)
-recommended = project["recommended_repository_slug"]
-
-slug_re = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-for key in ("repository_slug", "recommended_repository_slug"):
-    value = project[key]
-    if not slug_re.fullmatch(value):
-        raise SystemExit(f"invalid repository slug in project.json: {key}={value!r}")
-status = project.get("rename_status")
-if status not in {"proposed", "adopted"}:
-    raise SystemExit("rename_status must be proposed or adopted")
-if status == "proposed" and recommended == project["repository_slug"]:
-    raise SystemExit("a proposed repository slug must differ from the current slug")
-if status == "adopted" and recommended != project["repository_slug"]:
-    raise SystemExit("an adopted repository slug must equal the current slug")
+slug = project["repository_slug"]
+previous = project.get("previous_repository_slug")
 
 must_contain = {
-    "README.md": [project["site_name"], repo, site, recommended, version],
+    "README.md": [project["site_name"], repo, site, slug, version],
     "mkdocs.yml": [project["site_name"], project["site_tagline"], repo, site, repo_full],
     "CITATION.cff": [version, repo, site, project["artifact_title"]],
     "CITATION.bib": [version, repo],
     "codemeta.json": [version, repo, site, project["site_name"]],
     ".zenodo.json": [version, project["artifact_title"]],
-    "archive/theorem-manifest.json": [version, project["upstream_commit"]],
+    "archive/theorem-manifest.json": [version, project["upstream_commit"], repo, site],
     "docs/publication/submission-metadata.yaml": [version, project["artifact_title"]],
-    "REPOSITORY_RENAME.md": [recommended],
-    "docs/maintainers/rename-repository.md": [recommended],
+    "REPOSITORY_HISTORY.md": [repo_full, site, "MarkedRootedClosure"],
+    "docs/maintainers/repository-history.md": [repo_full, site, "MarkedRootedClosure"],
 }
 for rel, needles in must_contain.items():
     path = ROOT / rel
@@ -51,16 +39,43 @@ for rel, needles in must_contain.items():
 for rel in ("project.json", "codemeta.json", ".zenodo.json", "archive/theorem-manifest.json"):
     json.loads((ROOT / rel).read_text(encoding="utf-8"))
 
+if (ROOT / "REPOSITORY_RENAME.md").exists() or (ROOT / "docs/maintainers/rename-repository.md").exists():
+    raise SystemExit("obsolete rename-proposal files must be removed after adoption")
+
+old_urls = []
+if previous:
+    old_urls = [
+        f"https://github.com/{project['repository_owner']}/{previous}",
+        f"https://{project['repository_owner']}.github.io/{previous}/",
+    ]
+for path in ROOT.rglob("*"):
+    if not path.is_file():
+        continue
+    rel = path.relative_to(ROOT)
+    if any(part in {".git", ".lake", "site", "release", ".venv", ".venv-docs", "__pycache__"}
+           for part in rel.parts):
+        continue
+    if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+        continue
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        continue
+    for old_url in old_urls:
+        if old_url in text:
+            raise SystemExit(f"stale pre-rename URL in {rel}: {old_url}")
+
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 for stale in (
     "Uploading this v2 tree",
     "The existing GitHub repository contains the previous PDF-based bundle",
     "paper/main.pdf",
     "paper/main.tex",
+    "recommended public name",
 ):
     if stale in readme:
         raise SystemExit(f"stale publication language in README: {stale!r}")
 
 print("project identity audit: OK")
 print(f"current repository: {repo_full}")
-print(f"recommended rename: {project['repository_owner']}/{recommended}")
+print("rename status: adopted; Lean namespace preserved")

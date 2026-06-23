@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/release-index.schema.json",
+  "title": "Release evidence index",
+  "type": "object",
+  "required": ["schema_version", "release", "proof_environment", "source_evidence", "artifacts"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "release": {
+      "type": "object",
+      "required": ["name", "version", "date", "repository", "documentation", "profile", "provenance_format"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "repository": {"type": "string", "format": "uri"},
+        "documentation": {"type": "string", "format": "uri"},
+        "profile": {"type": "string"},
+        "provenance_format": {"const": "in-toto-statement-v1"}
+      },
+      "additionalProperties": false
+    },
+    "proof_environment": {
+      "type": "object",
+      "required": [
+        "lean_toolchain", "mathlib_commit", "upstream_repository",
+        "upstream_commit", "elan_installer_commit", "elan_installer_blob_sha"
+      ],
+      "properties": {
+        "lean_toolchain": {"type": "string"},
+        "mathlib_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "upstream_repository": {"type": "string", "format": "uri"},
+        "upstream_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "elan_installer_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "elan_installer_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      },
+      "additionalProperties": false
+    },
+    "source_evidence": {
+      "type": "object",
+      "required": [
+        "project_metadata", "theorem_manifest", "proof_dag", "paper_manifest",
+        "actions_manifest", "python_lock", "citation_schema", "source_manifest"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["name", "role", "media_type", "bytes", "sha256"],
+        "properties": {
+          "name": {"type": "string"},
+          "role": {"type": "string"},
+          "media_type": {"type": "string"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

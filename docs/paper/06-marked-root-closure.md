@@ -16,6 +16,9 @@ $$(n+1)\mathsf S_n(r)
 
 </div>
 
+!!! tip "Machine-checked endpoint"
+    `MarkedRootedClosure.markedRootLeafGeometricBound`
+
 <div class="proof" markdown="1">
 
 *Assembly.* The raw incompatibility-tree sum is first bounded by a sum

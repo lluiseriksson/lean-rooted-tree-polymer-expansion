@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/provenance.schema.json",
+  "title": "Deterministic in-toto/SLSA release provenance statement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_type", "subject", "predicateType", "predicate"],
+  "properties": {
+    "_type": {"const": "https://in-toto.io/Statement/v1"},
+    "subject": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "digest"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "digest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sha256"],
+            "properties": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+          }
+        }
+      }
+    },
+    "predicateType": {"const": "https://slsa.dev/provenance/v1"},
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildDefinition", "runDetails"],
+      "properties": {
+        "buildDefinition": {
+          "type": "object",
+          "required": ["buildType", "externalParameters", "internalParameters", "resolvedDependencies"],
+          "properties": {
+            "buildType": {"type": "string", "format": "uri"},
+            "externalParameters": {"type": "object"},
+            "internalParameters": {"type": "object"},
+            "resolvedDependencies": {"type": "array", "minItems": 4}
+          },
+          "additionalProperties": false
+        },
+        "runDetails": {
+          "type": "object",
+          "required": ["builder", "metadata"],
+          "properties": {
+            "builder": {
+              "type": "object",
+              "required": ["id"],
+              "properties": {"id": {"type": "string", "format": "uri"}},
+              "additionalProperties": false
+            },
+            "metadata": {"type": "object"}
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}

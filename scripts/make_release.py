@@ -62,6 +62,7 @@ for path in files:
     rel = path.relative_to(ROOT).as_posix()
     manifest_rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {rel}")
 manifest_bytes = ("\n".join(manifest_rows) + "\n").encode("utf-8")
+(ROOT / "MANIFEST.sha256").write_bytes(manifest_bytes)
 
 with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
     for path in files:

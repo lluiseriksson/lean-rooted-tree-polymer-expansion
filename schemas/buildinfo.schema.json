@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/buildinfo.schema.json",
+  "title": "Deterministic release build information",
+  "type": "object",
+  "required": ["schema_version", "project", "proof_environment", "source_inputs", "artifacts", "verification"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "project": {
+      "type": "object",
+      "required": [
+        "name", "version", "release_date", "repository", "documentation",
+        "publication_model", "release_profile", "minimum_python", "python_lock",
+        "provenance_format"
+      ],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"},
+        "release_date": {"type": "string", "format": "date"},
+        "repository": {"type": "string", "format": "uri"},
+        "documentation": {"type": "string", "format": "uri"},
+        "publication_model": {"type": "string"},
+        "release_profile": {"type": "string"},
+        "minimum_python": {"type": "string"},
+        "python_lock": {"const": "requirements-docs.lock"},
+        "provenance_format": {"const": "in-toto-statement-v1"}
+      },
+      "additionalProperties": false
+    },
+    "proof_environment": {
+      "type": "object",
+      "required": [
+        "lean_toolchain", "mathlib_commit", "upstream_repository",
+        "upstream_commit", "elan_installer_commit", "elan_installer_blob_sha"
+      ],
+      "properties": {
+        "lean_toolchain": {"type": "string"},
+        "mathlib_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "upstream_repository": {"type": "string", "format": "uri"},
+        "upstream_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "elan_installer_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "elan_installer_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      },
+      "additionalProperties": false
+    },
+    "source_inputs": {
+      "type": "object",
+      "minProperties": 7,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["name", "media_type", "bytes", "sha256"],
+        "properties": {
+          "name": {"type": "string"},
+          "media_type": {"type": "string"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["source_commands", "axiom_policy", "standalone_pdf_tracked", "ci_python"],
+      "properties": {
+        "source_commands": {"type": "array", "items": {"type": "string"}},
+        "axiom_policy": {"type": "array", "items": {"type": "string"}},
+        "standalone_pdf_tracked": {"const": false},
+        "ci_python": {"const": "3.12"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

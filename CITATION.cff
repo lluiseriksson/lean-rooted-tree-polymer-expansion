@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this formalization artifact, cite the software release and integrated article."
 title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
-version: 2.1.0
-date-released: 2026-06-22
+version: 2.4.0
+date-released: 2026-06-23
 type: software
 authors:
   - family-names: Eriksson
@@ -13,8 +13,9 @@ license: AGPL-3.0-or-later
 abstract: >-
   A documentation-integrated Lean 4 publication artifact for a finite,
   target-preserving rooted-tree leaf-summation mechanism in polymer cluster
-  expansions with holes. The artifact exposes three stable theorem endpoints
-  and pins the exact upstream proof source, Lean toolchain, and Mathlib revision.
+  expansions with holes. The artifact exposes three stable theorem endpoints,
+  pins the exact proof and tooling environment, and publishes a proof DAG,
+  deterministic dual SBOMs, and in-toto/SLSA release provenance.
 keywords:
   - Lean 4
   - cluster expansion

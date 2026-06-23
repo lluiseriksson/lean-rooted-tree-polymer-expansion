@@ -32,6 +32,8 @@ expected_lock = {
     "UPSTREAM_COMMIT": project["upstream_commit"],
     "LEAN_TOOLCHAIN": project["lean_toolchain"],
     "MATHLIB_COMMIT": project["mathlib_commit"],
+    "ELAN_INSTALLER_COMMIT": project["elan_installer_commit"],
+    "ELAN_INSTALLER_BLOB_SHA": project["elan_installer_blob_sha"],
 }
 for key, value in expected_lock.items():
     if f"{key}={value}" not in lock_text:
@@ -42,6 +44,11 @@ if project["upstream_commit"] not in lakefile:
     raise SystemExit("lakefile.lean does not contain the pinned upstream commit")
 if not re.search(rf'version\s*:=\s*v!"{re.escape(project["version"])}"', lakefile):
     raise SystemExit("lakefile.lean package version differs from project.json")
+
+dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+for value in (project["elan_installer_commit"], project["elan_installer_blob_sha"]):
+    if value not in dockerfile:
+        raise SystemExit("Dockerfile does not contain pinned elan installer provenance")
 
 toolchain = (ROOT / "lean-toolchain").read_text(encoding="utf-8").strip()
 if toolchain != project["lean_toolchain"]:

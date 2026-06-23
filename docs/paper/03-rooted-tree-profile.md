@@ -31,6 +31,9 @@ $n\in\mathbb N$, $$\frac{n+1}{(n+1)!}
 
 </div>
 
+!!! tip "Machine-checked endpoint"
+    `MarkedRootedClosure.normalizedRootedChildFactorialTreeBound`
+
 <div class="proof" markdown="1">
 
 *Proof architecture.* The formal proof performs the following finite

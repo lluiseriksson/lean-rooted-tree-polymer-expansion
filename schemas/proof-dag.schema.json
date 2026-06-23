@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/schemas/proof-dag.schema.json",
+  "title": "Proof dependency graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact", "version", "nodes", "edges"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "qualified_name"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9.-]+$"},
+          "kind": {"enum": ["upstream-theorem", "public-endpoint"]},
+          "qualified_name": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "pattern": "^YangMills/.+\\.lean$"},
+          "source_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"kind": {"const": "upstream-theorem"}}},
+            "then": {"required": ["source", "source_blob_sha"]}
+          }
+        ]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "relation"],
+        "properties": {
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "relation": {
+            "enum": ["combinatorial-input", "target-decay-composition", "re-exported-as"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,17 +2,20 @@
 
 ## Repository and verification
 
-- [ ] Install the complete v2.1.0 replacement tree with deletion enabled.
+- [ ] Install the complete v2.4.0 replacement tree with deletion enabled.
 - [ ] Confirm `lake-manifest.json` is tracked and unchanged by ordinary builds.
-- [ ] Run a fresh Lean build from an empty Lake cache.
-- [ ] Inspect the oracle output and record the green CI URL and final commit.
-- [ ] Build MkDocs in strict mode and inspect both sectional and continuous
-      article views on desktop and mobile.
-- [ ] Confirm GitHub Pages uses the Actions deployment workflow.
-- [ ] Protect `main` and require Lean and documentation checks.
-- [ ] Run deterministic packaging and verify the ZIP, checksum, SPDX SBOM, and
-      provenance attestation.
-- [ ] Create a signed or annotated `v2.1.0` tag only after all gates pass.
+- [ ] Run `make test`, `make static`, and a fresh Lean build from an empty Lake cache.
+- [ ] Inspect the oracle output, confirm the exact three-axiom set for every
+      endpoint, and record the green CI URL and final commit.
+- [ ] Build MkDocs in strict mode and inspect sectional and continuous article
+      views on desktop and mobile.
+- [ ] Confirm GitHub Pages uses the Actions deployment workflow and that
+      `docs/llms.txt` is reachable from the deployed site.
+- [ ] Protect `main` and require Lean, documentation, and package checks.
+- [ ] Verify deterministic ZIP generation and the clean-room archive smoke test.
+- [ ] Verify ZIP and JSON sidecars, aggregate checksums, SPDX SBOM, CycloneDX
+      SBOM, build info, release index, and provenance attestations.
+- [ ] Create a signed or annotated `v2.4.0` tag only after all gates pass.
 - [ ] Archive the exact tagged release.
 
 ## Scholarly metadata
@@ -29,12 +32,5 @@
       submission format from the same Markdown sources without creating a
       second maintained manuscript.
 
-## Optional rename
-
-- [ ] Decide whether to adopt `lean-rooted-tree-polymer-expansion`.
-- [ ] Rename the GitHub repository before running the metadata migration script.
-- [ ] Verify the new Pages URL, badges, issue links, citation URLs, release
-      prefix, and archive integrations.
-
-Publication is blocked until the Lean and documentation workflows are green.
-Local static checks do not substitute for a kernel rebuild.
+Publication is blocked until the Lean, documentation, and release-evidence
+workflows are green. Local static checks do not substitute for a kernel rebuild.

@@ -29,5 +29,5 @@ for path in sorted(ROOT.rglob("*"), key=lambda p: p.as_posix()):
         continue
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     rows.append(f"{digest}  {rel.as_posix()}")
-OUT.write_text("\n".join(rows) + "\n", encoding="utf-8")
+OUT.write_bytes(("\n".join(rows) + "\n").encode("utf-8"))
 print(f"wrote {OUT.relative_to(ROOT)} with {len(rows)} entries")

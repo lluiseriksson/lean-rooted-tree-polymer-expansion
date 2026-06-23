@@ -1,34 +1,42 @@
-# Migration to v2.1.0
+# Migration to v2.4.0
 
-Version 2.1.0 is a publication-hardening release. It preserves the three Lean
-theorem statements and the integrated-documentation model introduced in v2.0.0.
-
-## Improvements over v2.0.0
-
-- commits the authoritative `lake-manifest.json` in the release ZIP;
-- removes `lake update` from ordinary verification and makes lock refresh
-  explicit;
-- adds a single-source continuous article generated from the canonical section
-  files;
-- adds project-identity, paper-manifest, Lake-lock, oracle-log, and deterministic
-  release audits;
-- adds an SPDX 2.3 JSON software bill of materials;
-- clarifies the site identity and proposes the descriptive repository slug
-  `lean-rooted-tree-polymer-expansion`;
-- adds an idempotent repository-rename metadata tool;
-- improves site navigation, print rendering, evaluator documentation, and the
-  release playbook.
+Version 2.4.0 preserves the three public Lean theorem statements and the
+integrated-documentation model. It replaces the v2.3 source tree to repair the
+Python dependency environment and add proof-DAG, accessibility, safe-extraction,
+and deterministic provenance evidence.
 
 ## Replacement procedure
 
-Use a delete-aware copy so obsolete files from an earlier checkout do not
-survive:
+Use a delete-aware copy so obsolete files and generated caches do not survive:
 
 ```bash
 rsync -a --delete --exclude='.git/' \
-  /path/to/lean-rooted-tree-polymer-expansion-v2.1.0/ ./
+  /path/to/lean-rooted-tree-polymer-expansion-v2.4.0/ ./
+make docs-setup
+make test
+make syntax
 make static
+make docs
 ```
 
-Do not run the rename helper until the GitHub repository has actually been
-renamed. The proposed rename is optional and does not change the Lean API.
+Then push without tagging and wait for the Lean, static/docs, package
+reproducibility, clean-room, and Pages checks. Tag `v2.4.0` only after all
+required checks are green.
+
+## Important dependency change
+
+Do not recreate the old `cffconvert`/`jsonschema` combination or reinstall the
+direct-only requirements file in CI. All reproducible environments install:
+
+```bash
+python -m pip install -r requirements-docs.lock
+```
+
+`requirements-docs.txt` remains the reviewed four-package direct intent; the
+lock is the executable transitive environment.
+
+## Release evidence change
+
+Tagged releases now include `*.intoto.jsonl` and its SHA-256 sidecar in
+addition to the source ZIP, two SBOMs, build information, release index, and
+aggregate checksum file.

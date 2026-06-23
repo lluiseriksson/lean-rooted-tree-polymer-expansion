@@ -9,16 +9,16 @@
 3. R. Fernández and A. Procacci, “Cluster Expansion for Abstract Polymer
    Models: New Bounds from an Old Approach,” *Communications in Mathematical
    Physics* **274** (2007), 123--140.
-   [doi:10.1007/s00220-007-0279-2](https://doi.org/10.1007/s00220-007-0279-2)
+   [doi:10.1007/s00220-007-0279-2](https://doi.org/10.1007/s00220-007-0279-2) · [arXiv:math-ph/0605041](https://arxiv.org/abs/math-ph/0605041)
 4. D. C. Brydges, “A Short Course on Cluster Expansions,” in *Critical
    Phenomena, Random Systems, Gauge Theories*, North-Holland, 1986,
    pp. 129--183.
 5. J. Dimock, “The Renormalization Group According to Balaban--I. Small
    Fields,” *Reviews in Mathematical Physics* **25** (2013), 1330010.
-   [doi:10.1142/S0129055X13300100](https://doi.org/10.1142/S0129055X13300100)
+   [doi:10.1142/S0129055X13300100](https://doi.org/10.1142/S0129055X13300100) · [arXiv:1108.1335](https://arxiv.org/abs/1108.1335)
 6. J. Dimock, “The Renormalization Group According to Balaban--II. Large
    Fields,” *Journal of Mathematical Physics* **54** (2013), 092301.
-   [doi:10.1063/1.4821631](https://doi.org/10.1063/1.4821631)
+   [doi:10.1063/1.4821631](https://doi.org/10.1063/1.4821631) · [arXiv:1212.5562](https://arxiv.org/abs/1212.5562)
 7. J. Dimock, “The Renormalization Group According to Balaban--III.
    Convergence,” *Annales Henri Poincaré* **15** (2014), 2133--2170.
    [arXiv:1304.0705](https://arxiv.org/abs/1304.0705)
@@ -38,6 +38,7 @@
 13. L. Eriksson, *THE-ERIKSSON-PROGRAMME: Machine-Checked Polymer and
     Renormalization-Group Infrastructure*, Git repository, commit
     `4e45246aa109671d25fcd01ba1abf7bc3f8506d1`, 2026.
+    [Repository](https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME)
 
 
 The [BibTeX source](references.bib) is retained for venue export and reference auditing.

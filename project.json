@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
-  "version": "2.1.0",
-  "release_date": "2026-06-22",
+  "schema_version": 4,
+  "version": "2.4.0",
+  "release_date": "2026-06-23",
   "artifact_title": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
   "site_name": "Lean Rooted-Tree Polymer Expansion",
   "site_tagline": "Machine-checked target-preserving Ursell leaf summation for polymer systems with holes",
@@ -16,5 +16,13 @@
   "publication_model": "integrated-documentation",
   "paper_entrypoint": "docs/paper/index.md",
   "rename_status": "adopted",
-  "previous_repository_slug": "marked-rooted-closure"
+  "previous_repository_slug": "marked-rooted-closure",
+  "minimum_python": "3.11",
+  "release_profile": "source-only-reproducible",
+  "elan_installer_commit": "b6cec7e10fe4965a605aaf60d1cb4a5837f0462b",
+  "elan_installer_blob_sha": "ab8c346be2d665b2c77a6eba0dc2338c43413a9c",
+  "python_lock": "requirements-docs.lock",
+  "citation_schema": "schemas/citation-cff.schema.json",
+  "proof_dag": "archive/proof-dag.json",
+  "provenance_format": "in-toto-statement-v1"
 }

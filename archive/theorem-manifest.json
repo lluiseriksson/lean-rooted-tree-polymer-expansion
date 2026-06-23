@@ -1,7 +1,8 @@
 {
   "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
-  "version": "2.1.0",
+  "version": "2.4.0",
   "publication_model": "integrated-documentation",
+  "proof_dag": "archive/proof-dag.json",
   "upstream": {
     "repository": "https://github.com/lluiseriksson/THE-ERIKSSON-PROGRAMME",
     "commit": "4e45246aa109671d25fcd01ba1abf7bc3f8506d1",
@@ -15,21 +16,33 @@
       "qualified_public_name": "MarkedRootedClosure.normalizedRootedChildFactorialTreeBound",
       "upstream_name": "YangMills.KP.rootedChildCount_factorialTreeSum_normalized_le_four_pow",
       "source": "YangMills/KP/RootedLeafSummation.lean",
-      "paper_page": "docs/paper/03-rooted-tree-profile.md"
+      "paper_page": "docs/paper/03-rooted-tree-profile.md",
+      "source_blob_sha": "1415686403c26536da8736a9021237773c7467dc",
+      "public_signature_sha256": "65481a73cfd74d6e9a35000c8c657820252b5e10b1df074e18a08ec2b27fde84",
+      "source_excerpt": "vendor/upstream-excerpts/RootedLeafSummation.excerpt.txt",
+      "source_excerpt_sha256": "85f78a155688fe57abcfcca3602d0ddf24e459ef256b99a8830bc0498ec0be04"
     },
     {
       "public_name": "markedRootLeafGeometricBound",
       "qualified_public_name": "MarkedRootedClosure.markedRootLeafGeometricBound",
       "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeMarkedRootSum_le_geometric_of_expWeight",
       "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
-      "paper_page": "docs/paper/06-marked-root-closure.md"
+      "paper_page": "docs/paper/06-marked-root-closure.md",
+      "source_blob_sha": "0307d11b95d4385d4ea39067290e7eec929cd7f6",
+      "public_signature_sha256": "eed559375b1557b93cbec8a9f9038430b5360b854bac9da39f2faf5e2f08f2a3",
+      "source_excerpt": "vendor/upstream-excerpts/AppendixFLeafSummation.excerpt.txt",
+      "source_excerpt_sha256": "8bb4f1c3a59e7464cab5523dead76b0f88fca07f2ea52fe3921c56f2ed5c1826"
     },
     {
       "public_name": "targetPreservingWeightedTreeBound",
       "qualified_public_name": "MarkedRootedClosure.targetPreservingWeightedTreeBound",
       "upstream_name": "YangMills.RG.appendixFHoleHsharpWeightedTreeTerm_le_geometric_of_expWeight_leafSummation",
       "source": "YangMills/RG/AppendixFSecondUrsellLeafSummation.lean",
-      "paper_page": "docs/paper/07-target-preserving-decay.md"
+      "paper_page": "docs/paper/07-target-preserving-decay.md",
+      "source_blob_sha": "0307d11b95d4385d4ea39067290e7eec929cd7f6",
+      "public_signature_sha256": "b9e729583eccb273791e763f5d98bd60f575361769e180552ee383097b537e57",
+      "source_excerpt": "vendor/upstream-excerpts/AppendixFLeafSummation.excerpt.txt",
+      "source_excerpt_sha256": "8bb4f1c3a59e7464cab5523dead76b0f88fca07f2ea52fe3921c56f2ed5c1826"
     }
   ],
   "claim_boundary": {
@@ -41,6 +54,16 @@
   "repository": {
     "url": "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion",
     "site": "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/",
-    "slug": "marked-rooted-closure"
-  }
+    "slug": "lean-rooted-tree-polymer-expansion"
+  },
+  "schema_version": 4,
+  "wrapper": {
+    "path": "MarkedRootedClosure/PaperTheorems.lean",
+    "sha256": "e5519b968a726f98e81bf03c1ca54ab0eb5217ab5b74cdcf9fad35c578e84300"
+  },
+  "oracle_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ]
 }
