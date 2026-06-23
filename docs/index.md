@@ -2,6 +2,14 @@
 
 **Machine-checked target-preserving Ursell leaf summation for polymer systems with holes.**
 
+!!! note "Archived final artifact"
+
+    This repository is closed at release `v2.4.3` as a reproducible Lean 4
+    proof artifact. It is not maintained as an active paper claiming
+    independent new mathematical theory. The useful record is the scoped
+    formalization, theorem provenance, release evidence, and explicit claims
+    boundary.
+
 [Read the article](paper/index.md){ .md-button .md-button--primary }
 [Read it as one page](generated/full-article.md){ .md-button }
 [Inspect the Lean theorems](formalization/index.md){ .md-button }
@@ -90,6 +98,10 @@ This repository proves finite combinatorics and target-sensitive geometric
 composition. It does not prove a model-specific raw Yang--Mills activity,
 `hRpoly`, a continuum limit, reconstruction, or a mass gap. That distinction is
 part of the artifact: see [Claims and scope](about/claims.md).
+
+The classical tree-graph and polymer-expansion ingredients are not presented as
+new standalone mathematics; the scoped contribution is their machine-checked
+assembly and reproducibility record.
 
 ## Stable public identity
 

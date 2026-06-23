@@ -1,5 +1,11 @@
 # What this project is
 
+!!! note "Archived final state"
+
+    The repository is closed at `v2.4.3`. It is preserved as a reproducible
+    Lean 4 proof artifact and documentation site, not as an active research
+    programme or an ongoing publication claim.
+
 This project is a compact, reviewable publication artifact for one precise
 piece of constructive mathematical physics: a finite rooted-tree summation that
 preserves enough geometric information to retain decay in an exact target
@@ -49,3 +55,7 @@ cluster expansions, polymer models, constructive field theory, renormalization
 group methods, or formalized mathematics. It is also structured so an artifact
 evaluator can reproduce the result without reading the entire upstream
 Yang--Mills development.
+
+The intended use is archival review, reuse of the small public Lean interface,
+and inspection of the release evidence. New mathematical claims should be made
+in a separate project rather than by extending this closed artifact.
