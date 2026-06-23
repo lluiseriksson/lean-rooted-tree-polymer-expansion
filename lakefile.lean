@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «MarkedRootedClosure» where
-  version := v!"2.4.2"
+  version := v!"2.4.3"
 
 lean_lib «MarkedRootedClosure» where
   roots := #[`MarkedRootedClosure]

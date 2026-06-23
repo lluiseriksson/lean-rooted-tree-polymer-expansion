@@ -76,35 +76,63 @@ def collect_source_files(root: Path, *, include_manifest: bool = True) -> list[P
     files: list[Path] = []
     portable_prefixes: dict[tuple[str, ...], tuple[str, ...]] = {}
 
-    for path in root.rglob("*"):
-        rel = path.relative_to(root)
-        if is_excluded(rel):
-            continue
-        _validate_relative_path(rel)
+    def walk_error(error: OSError) -> None:
+        raise SourceInventoryError(f"cannot scan source tree: {error}") from error
 
-        mode = os.lstat(path).st_mode
-        if stat.S_ISLNK(mode):
-            raise SourceInventoryError(f"source-tree symlink is forbidden: {rel.as_posix()}")
-        if stat.S_ISDIR(mode):
-            continue
-        if not stat.S_ISREG(mode):
-            raise SourceInventoryError(
-                f"non-regular source entry is forbidden: {rel.as_posix()}"
-            )
-        if not include_manifest and rel == MANIFEST_REL:
-            continue
+    for current, dirnames, filenames in os.walk(
+        root, topdown=True, onerror=walk_error, followlinks=False
+    ):
+        current_path = Path(current)
 
-        for length in range(1, len(rel.parts) + 1):
-            prefix = rel.parts[:length]
-            portable_key = tuple(part.casefold() for part in prefix)
-            previous = portable_prefixes.get(portable_key)
-            if previous is not None and previous != prefix:
+        retained_dirs: list[str] = []
+        for name in sorted(dirnames):
+            path = current_path / name
+            rel = path.relative_to(root)
+            if is_excluded(rel):
+                continue
+            _validate_relative_path(rel)
+            mode = os.lstat(path).st_mode
+            if stat.S_ISLNK(mode):
                 raise SourceInventoryError(
-                    "portable source-path collision: "
-                    f"{'/'.join(previous)!r} and {'/'.join(prefix)!r}"
+                    f"source-tree symlink is forbidden: {rel.as_posix()}"
                 )
-            portable_prefixes[portable_key] = prefix
-        files.append(path)
+            if not stat.S_ISDIR(mode):
+                raise SourceInventoryError(
+                    f"non-directory source entry is forbidden: {rel.as_posix()}"
+                )
+            retained_dirs.append(name)
+        dirnames[:] = retained_dirs
+
+        for name in sorted(filenames):
+            path = current_path / name
+            rel = path.relative_to(root)
+            if is_excluded(rel):
+                continue
+            _validate_relative_path(rel)
+
+            mode = os.lstat(path).st_mode
+            if stat.S_ISLNK(mode):
+                raise SourceInventoryError(
+                    f"source-tree symlink is forbidden: {rel.as_posix()}"
+                )
+            if not stat.S_ISREG(mode):
+                raise SourceInventoryError(
+                    f"non-regular source entry is forbidden: {rel.as_posix()}"
+                )
+            if not include_manifest and rel == MANIFEST_REL:
+                continue
+
+            for length in range(1, len(rel.parts) + 1):
+                prefix = rel.parts[:length]
+                portable_key = tuple(part.casefold() for part in prefix)
+                previous = portable_prefixes.get(portable_key)
+                if previous is not None and previous != prefix:
+                    raise SourceInventoryError(
+                        "portable source-path collision: "
+                        f"{'/'.join(previous)!r} and {'/'.join(prefix)!r}"
+                    )
+                portable_prefixes[portable_key] = prefix
+            files.append(path)
 
     return sorted(files, key=lambda path: path.relative_to(root).as_posix())
 

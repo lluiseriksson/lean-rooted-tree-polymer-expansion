@@ -2,6 +2,51 @@
 
 All notable changes to this publication artifact are recorded here.
 
+## 2.4.3 - 2026-06-23
+
+### Fixed
+
+- Removed broad release-asset globs from the privileged publication step. The
+  GitHub release command now receives one explicit, duplicate-free list of 13
+  filenames, preventing a checksum aggregate from being uploaded twice and
+  rejecting stale files left in `release/`.
+- Made checksum verification byte-canonical rather than merely parseable:
+  sidecars and the aggregate now require lowercase SHA-256, exact filenames,
+  two-space separators, fixed ordering, and a final LF.
+- Prevented source and artifact audits from recursively walking excluded build,
+  documentation, release, and virtual-environment trees. Top-down pruning now
+  keeps local verification bounded even after `make docs-setup`.
+
+### Added
+
+- Split tagged releases into a read-only `verify-and-package` job and a minimal
+  tag-only `publish` job. The privileged job does not check out or execute
+  repository code; it downloads only the verified short-lived candidate before
+  attestation and publication.
+- Added `scripts/release_inventory.py` as the single definition of primary
+  artifacts, sidecars, aggregate checksums, and the exact release-directory
+  set, plus regression tests for unexpected, malformed, reordered, and
+  non-regular assets.
+- Pinned `actions/download-artifact` by immutable commit and added workflow
+  policy tests for privilege escalation, wildcard uploads, privileged checkout,
+  and privileged repository-script execution.
+
+### Changed
+
+- ZIP, SPDX, CycloneDX, build-information, provenance, release-index,
+  determinism, and release-verification tooling now share the canonical release
+  inventory and checksum implementation.
+- Build information and release-index verification now require exact ordered
+  artifact records, roles, media types, source-input sets, proof-environment
+  identity, sizes, and digests rather than accepting partial matching records.
+- Manual release-workflow dispatch performs verification only; publication
+  requires a semantic-version tag in the canonical repository.
+
+### Preserved
+
+- The three public Lean theorem statements, exact upstream proof revision,
+  Lean/Mathlib pins, oracle axiom boundary, and mathematical claims boundary.
+
 ## 2.4.2 - 2026-06-23
 
 ### Fixed

@@ -27,3 +27,6 @@
     `MANIFEST.sha256` diff before `make static`.
 13. Keep `docs/llms.txt` synchronized with project metadata, verification
     entrypoints, and the three public theorem endpoints.
+14. Keep release publication privilege-separated and exact-set based. Do not
+    execute repository code in the privileged publish job or replace the 13
+    explicit assets with shell globs.

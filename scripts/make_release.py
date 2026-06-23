@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import hashlib
 import shutil
 import stat
 import zipfile
@@ -9,13 +8,13 @@ from datetime import date
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem
+from release_inventory import sha256, write_sidecar
 from source_inventory import MANIFEST_REL, collect_source_files, render_manifest
 
 project = load_project()
 name = release_stem(project)
 out = ROOT / "release"
 zip_path = out / f"{name}.zip"
-sidecar = out / f"{name}.zip.sha256"
 release_date = date.fromisoformat(project["release_date"])
 fixed_time = (release_date.year, release_date.month, release_date.day, 12, 0, 0)
 
@@ -55,7 +54,7 @@ with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compressle
         info.create_system = 3
         zf.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
 
-digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
-sidecar.write_text(f"{digest}  {zip_path.name}\n", encoding="utf-8")
+digest = sha256(zip_path)
+write_sidecar(zip_path)
 print(f"release created: {zip_path}")
 print(f"sha256: {digest}")

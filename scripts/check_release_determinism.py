@@ -9,26 +9,13 @@ import tempfile
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem
+from release_inventory import expected_release_names, verify_release_inventory
 from process_runner import run_checked
 
 project = load_project()
 stem = release_stem(project)
 release_dir = ROOT / "release"
-primary = [
-    f"{stem}.zip",
-    f"{stem}.zip.sha256",
-    f"{stem}.spdx.json",
-    f"{stem}.spdx.json.sha256",
-    f"{stem}.cdx.json",
-    f"{stem}.cdx.json.sha256",
-    f"{stem}.buildinfo.json",
-    f"{stem}.buildinfo.json.sha256",
-    f"{stem}.intoto.jsonl",
-    f"{stem}.intoto.jsonl.sha256",
-    f"{stem}.release.json",
-    f"{stem}.release.json.sha256",
-    f"{stem}.checksums.sha256",
-]
+primary = list(expected_release_names(project))
 
 
 def build() -> None:
@@ -41,6 +28,7 @@ def build() -> None:
         "scripts/generate_release_index.py",
     ):
         run_checked([sys.executable, relative], cwd=ROOT, timeout=180)
+    verify_release_inventory(project, release_dir)
 
 
 with tempfile.TemporaryDirectory() as temp:

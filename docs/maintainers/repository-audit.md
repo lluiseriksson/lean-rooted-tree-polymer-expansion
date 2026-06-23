@@ -1,4 +1,4 @@
-# Repository audit for v2.4.2
+# Repository audit for v2.4.3
 
 **Audit date:** 2026-06-23
 **Current remote:** `lluiseriksson/lean-rooted-tree-polymer-expansion`
@@ -55,6 +55,18 @@ stable Lean namespace were already consistent in the live v2.1.0 tree.
     exact oracle parsing, references, workflow drift, agent indexing, and
     malicious ZIP constructions.
 
+## Execution safety added in v2.4.2
+
+- Replaced raw long-running local Lean/Lake calls with a dependency-free
+  process-tree supervisor that handles timeout, interrupt, parent loss, and
+  residual background descendants.
+- Configured the pinned Lean action for one explicit `MarkedRootedClosure`
+  build plus `leanchecker`, followed only by the exact-oracle audit.
+- Required byte-identical `lake-manifest.json` across local build and oracle
+  phases and kept failed oracle logs for diagnosis.
+- Corrected deterministic provenance so it declares a reproducible recipe with
+  `executionBound: false` while hosted attestations remain separate evidence.
+
 ## Preserved mathematical interface
 
 ```text
@@ -69,28 +81,35 @@ or mathematical claim changes in this release.
 ## External release gate
 
 The assembled source package can run all dependency-free audits and release
-integrity checks locally. The authoritative GitHub Actions gate must perform one
-explicit Lean kernel build from the committed Lake graph, run the exact oracle,
-build strict documentation, deploy Pages, reproduce the package, smoke-test the
-archive, and attach hosted provenance before publishing v2.4.2.
+integrity checks locally. The authoritative GitHub Actions gate performs one
+explicit Lean kernel build from the committed Lake graph, runs the exact oracle,
+builds strict documentation, deploys Pages, reproduces the package, smoke-tests
+the archive, and transfers the exact candidate from a read-only job to a
+separate tag-only publisher.
 
-## v2.4.2 audit delta
+## v2.4.3 audit delta
 
-The v2.4.2 review found that the pinned Lean action's default automatic
-configuration already ran `lake build`, while the following `make lean` step ran
-the same build again. All Lean workflows now configure one explicit action build
-and follow it with `make lean-oracle`; workflow tests reject a regression to
-implicit configuration or duplicate compilation.
+The published v2.4.2 correction demonstrated that broad release globs can map
+one file to multiple command arguments: the aggregate `.checksums.sha256` file
+also matched the generic `*.sha256` pattern. The local release was valid, but
+publication needed a manual workflow correction to avoid the duplicate asset.
 
-The review also reproduced the lifecycle hazard reported after a local timeout:
-killing a Make or shell parent can leave Lean/Lake descendants alive. The new
-dependency-free process runner isolates commands in their own process group,
-monitors timeout, signals, and parent loss, and terminates the complete tree.
-Regression tests cover descendant cleanup and Lake-lock drift without invoking
-the real Lean toolchain.
+v2.4.3 turns that incident into an enforced protocol. One shared module defines
+six primary artifacts, their six sidecars, and one aggregate checksum. Every
+sidecar and the aggregate are compared byte for byte, and an exact-directory
+check rejects missing, extra, symlinked, non-regular, malformed, or reordered
+entries. The final `gh release create` command receives all 13 filenames
+explicitly and contains no asset glob.
 
-Finally, the deterministic in-toto statement no longer identifies itself as an
-execution-bound release workflow run. It declares the reproducible recipe and
-required external gates, while tagged GitHub attestations remain the separate
-hosted execution evidence. Public Lean statements, proof pins, and claims are
-unchanged.
+The review also found that the former release job performed source checkout,
+Lean verification, arbitrary repository tooling, attestation, and publication
+under one workflow-wide write token. The new `verify-and-package` job has only
+read permission. A distinct tag-only `publish` job receives write/OIDC rights,
+does not check out or execute repository code, validates the transferred
+candidate inline, and scopes `GH_TOKEN` to the final upload step. Manual dispatch
+can verify but cannot publish.
+
+Workflow tests now fail if write permission moves to workflow scope, if the two
+jobs collapse, if privileged source checkout or repository-script execution is
+introduced, or if an explicit asset path is replaced by a wildcard. Public Lean
+statements, proof pins, and claims remain unchanged.

@@ -46,6 +46,11 @@
     "source_inputs": {
       "type": "object",
       "minProperties": 7,
+      "maxProperties": 7,
+      "required": [
+        "python_lock", "theorem_manifest", "proof_dag", "paper_manifest",
+        "actions_manifest", "source_manifest", "citation_schema"
+      ],
       "additionalProperties": {
         "type": "object",
         "required": ["path", "sha256"],
@@ -59,6 +64,7 @@
     "artifacts": {
       "type": "array",
       "minItems": 3,
+      "maxItems": 3,
       "items": {
         "type": "object",
         "required": ["name", "media_type", "bytes", "sha256"],

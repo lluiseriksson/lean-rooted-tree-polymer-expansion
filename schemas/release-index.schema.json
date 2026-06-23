@@ -38,6 +38,8 @@
     },
     "source_evidence": {
       "type": "object",
+      "minProperties": 8,
+      "maxProperties": 8,
       "required": [
         "project_metadata", "theorem_manifest", "proof_dag", "paper_manifest",
         "actions_manifest", "python_lock", "citation_schema", "source_manifest"
@@ -55,6 +57,7 @@
     "artifacts": {
       "type": "array",
       "minItems": 5,
+      "maxItems": 5,
       "items": {
         "type": "object",
         "required": ["name", "role", "media_type", "bytes", "sha256"],

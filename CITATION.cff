@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this formalization artifact, cite the software release and integrated article."
 title: "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization"
-version: 2.4.2
+version: 2.4.3
 date-released: 2026-06-23
 type: software
 authors:

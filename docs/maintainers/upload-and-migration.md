@@ -1,6 +1,6 @@
 # Upload and migration instructions
 
-Version 2.4.2 should replace the working tree, not be copied as a partial
+Version 2.4.3 should replace the working tree, not be copied as a partial
 overlay.
 
 ## Safe procedure
@@ -9,14 +9,14 @@ overlay.
 git clone https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion.git
 cd lean-rooted-tree-polymer-expansion
 rsync -a --delete --exclude='.git/' \
-  /path/to/lean-rooted-tree-polymer-expansion-v2.4.2/ ./
+  /path/to/lean-rooted-tree-polymer-expansion-v2.4.3/ ./
 make docs-setup
 make verify-nonlean
 make package-determinism
 
 git status --short
 git add -A
-git commit -m "release: supervise Lean gate and deduplicate CI v2.4.2"
+git commit -m "release: privilege-separate publication v2.4.3"
 git push origin main
 ```
 
@@ -31,8 +31,8 @@ The delete-aware copy is important: it removes the superseded
    are green.
 3. Inspect the deployed site, including formulas, search, edit links, citation,
    verification contract, and continuous article.
-4. Create tag `v2.4.2` only after all checks pass.
-5. Confirm that the release includes the ZIP, all SHA-256 sidecars, SPDX SBOM,
-   CycloneDX SBOM, build information, deterministic in-toto declaration, and
-   hosted provenance attestations.
+4. Create tag `v2.4.3` only after all checks pass.
+5. Confirm that the release includes exactly 13 assets: six checksum subjects,
+   six canonical sidecars, and one aggregate checksum, plus the separate hosted
+   provenance attestations recorded by GitHub.
 6. Archive the verified release and update DOI metadata in a later commit.

@@ -26,6 +26,8 @@ def validate() -> list[str]:
         'does not prove the model-specific raw Yang--Mills activity estimate',
         'make verify-nonlean',
         'scripts/run_lean_gate.py',
+        'scripts/release_inventory.py',
+        'read-only verification transfers an exact candidate',
     ]
     return [f'llms.txt missing {needle!r}' for needle in needles if needle not in text]
 

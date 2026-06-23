@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 from project_config import ROOT, load_project
+from source_inventory import collect_source_files
 
 project = load_project()
 version = project["version"]
@@ -103,6 +104,7 @@ required = [
     "scripts/generate_buildinfo.py",
     "scripts/generate_release_index.py",
     "scripts/generate_provenance.py",
+    "scripts/release_inventory.py",
     "scripts/archive_safety.py",
     "scripts/process_runner.py",
     "scripts/run_lean_gate.py",
@@ -120,6 +122,7 @@ required = [
     "tests/test_workflows.py",
     "tests/test_agent_index.py",
     "tests/test_release_security.py",
+    "tests/test_release_inventory.py",
     "tests/test_archive_safety.py",
     "tests/test_accessibility.py",
     "tests/test_metadata_schema.py",
@@ -144,14 +147,10 @@ for forbidden in (
     if forbidden.exists():
         raise SystemExit(f"Obsolete or standalone-paper path must be removed: {forbidden.relative_to(ROOT)}")
 
-for path in ROOT.rglob("*"):
-    if not path.is_file():
-        continue
+source_files = collect_source_files(ROOT)
+
+for path in source_files:
     rel = path.relative_to(ROOT)
-    if rel.parts and rel.parts[0] in {"release", ".lake", "site", ".git", ".venv", ".venv-docs"}:
-        continue
-    if rel.parts[:2] == ("docs", "generated"):
-        continue
     if path.suffix.lower() in {".pdf", ".zip"}:
         raise SystemExit(f"Tracked standalone binary is forbidden: {rel}")
 
@@ -212,14 +211,11 @@ for rel in (
         raise SystemExit(f"Version {version} missing from {rel}")
 
 all_text: list[tuple[Path, str]] = []
-for path in ROOT.rglob("*"):
-    if not path.is_file() or path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+for path in source_files:
+    if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
         continue
     rel = path.relative_to(ROOT)
     if rel in {Path("scripts/check_artifact.py"), Path("scripts/check_project_identity.py")}:
-        continue
-    if any(part in {".git", ".lake", "site", "release", ".venv", ".venv-docs", "__pycache__"}
-           for part in rel.parts):
         continue
     try:
         text = path.read_text(encoding="utf-8")

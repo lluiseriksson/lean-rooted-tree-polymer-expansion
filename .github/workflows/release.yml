@@ -6,16 +6,19 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  id-token: write
-  attestations: write
+  contents: read
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: '1'
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  release:
+  verify-and-package:
+    name: Verify and stage a deterministic release candidate
     if: github.repository == 'lluiseriksson/lean-rooted-tree-polymer-expansion'
     runs-on: ubuntu-latest
     timeout-minutes: 95
@@ -43,9 +46,9 @@ jobs:
       - name: Verify tag matches project version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import json, os
-          version = json.load(open('project.json'))['version']
+          version = json.load(open('project.json', encoding='utf-8'))['version']
           tag = os.environ['GITHUB_REF_NAME']
           if tag != f'v{version}':
               raise SystemExit(f'tag {tag!r} does not match project version v{version}')
@@ -54,40 +57,159 @@ jobs:
         run: make lean-oracle
       - name: Verify non-Lean layers and package twice
         run: make package-determinism
+      - name: Stage the exact release directory
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-release-candidate
+          path: release/
+          if-no-files-found: error
+          retention-days: 2
+
+  publish:
+    name: Attest and publish without executing repository code
+    needs: verify-and-package
+    if: >-
+      needs.verify-and-package.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      github.repository == 'lluiseriksson/lean-rooted-tree-polymer-expansion'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download the verified release candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: source-release-candidate
+          path: release
+      - name: Validate the exact release inventory
+        id: inventory
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          REPOSITORY_SLUG: lean-rooted-tree-polymer-expansion
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          tag = os.environ['RELEASE_TAG']
+          match = re.fullmatch(r'v([0-9]+\.[0-9]+\.[0-9]+)', tag)
+          if match is None:
+              raise SystemExit(f'non-semantic release tag: {tag!r}')
+          version = match.group(1)
+          stem = f"{os.environ['REPOSITORY_SLUG']}-{tag}"
+          release = Path('release')
+          primary = [
+              f'{stem}.zip',
+              f'{stem}.spdx.json',
+              f'{stem}.cdx.json',
+              f'{stem}.buildinfo.json',
+              f'{stem}.intoto.jsonl',
+              f'{stem}.release.json',
+          ]
+          expected = primary + [f'{name}.sha256' for name in primary] + [
+              f'{stem}.checksums.sha256'
+          ]
+          entries = list(release.iterdir()) if release.is_dir() else []
+          irregular = sorted(
+              path.name for path in entries if path.is_symlink() or not path.is_file()
+          )
+          if irregular:
+              raise SystemExit('non-regular release entries: ' + ', '.join(irregular))
+          actual = sorted(path.name for path in entries)
+          if actual != sorted(expected):
+              missing = sorted(set(expected) - set(actual))
+              extra = sorted(set(actual) - set(expected))
+              raise SystemExit(
+                  f'exact release inventory mismatch; missing={missing}; unexpected={extra}'
+              )
+
+          def digest(path: Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          for name in primary:
+              path = release / name
+              sidecar = release / f'{name}.sha256'
+              canonical = f'{digest(path)}  {name}\n'.encode()
+              if sidecar.read_bytes() != canonical:
+                  raise SystemExit(f'non-canonical checksum sidecar: {sidecar.name}')
+          aggregate = b''.join(
+              f'{digest(release / name)}  {name}\n'.encode() for name in primary
+          )
+          aggregate_path = release / f'{stem}.checksums.sha256'
+          if aggregate_path.read_bytes() != aggregate:
+              raise SystemExit(f'non-canonical aggregate checksum: {aggregate_path.name}')
+
+          index = json.loads((release / f'{stem}.release.json').read_text(encoding='utf-8'))
+          release_record = index.get('release', {})
+          if release_record.get('name') != stem or release_record.get('version') != version:
+              raise SystemExit('release index identity does not match the tag')
+          indexed_specs = [
+              (primary[0], 'source-archive', 'application/zip'),
+              (primary[1], 'spdx-sbom', 'application/spdx+json'),
+              (primary[2], 'cyclonedx-sbom', 'application/vnd.cyclonedx+json'),
+              (primary[3], 'build-information', 'application/json'),
+              (primary[4], 'in-toto-provenance', 'application/jsonl'),
+          ]
+          indexed = index.get('artifacts')
+          if not isinstance(indexed, list) or len(indexed) != len(indexed_specs):
+              raise SystemExit('release index artifact count mismatch')
+          for item, (name, role, media_type) in zip(indexed, indexed_specs):
+              if not isinstance(item, dict):
+                  raise SystemExit('release index artifact record must be an object')
+              path = release / name
+              expected_record = {
+                  'name': name,
+                  'role': role,
+                  'media_type': media_type,
+                  'bytes': path.stat().st_size,
+                  'sha256': digest(path),
+              }
+              if item != expected_record:
+                  raise SystemExit(f'release index artifact metadata mismatch: {name}')
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f'stem={stem}\n')
+          print(f'exact release inventory: OK ({len(expected)} files)')
+          PY
       - name: Attest source archive provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
-          subject-path: release/*.zip
+          subject-path: release/${{ steps.inventory.outputs.stem }}.zip
       - name: Attest release evidence provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
           subject-path: |
-            release/*.spdx.json
-            release/*.cdx.json
-            release/*.buildinfo.json
-            release/*.intoto.jsonl
-            release/*.release.json
-            release/*.checksums.sha256
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: source-release
-          path: |
-            release/*.zip
-            release/*.sha256
-            release/*.spdx.json
-            release/*.cdx.json
-            release/*.buildinfo.json
-            release/*.intoto.jsonl
-            release/*.release.json
-            release/*.checksums.sha256
-          if-no-files-found: error
-      - name: Publish tagged GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
+            release/${{ steps.inventory.outputs.stem }}.spdx.json
+            release/${{ steps.inventory.outputs.stem }}.cdx.json
+            release/${{ steps.inventory.outputs.stem }}.buildinfo.json
+            release/${{ steps.inventory.outputs.stem }}.intoto.jsonl
+            release/${{ steps.inventory.outputs.stem }}.release.json
+            release/${{ steps.inventory.outputs.stem }}.checksums.sha256
+      - name: Publish the exact tagged asset set
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_STEM: ${{ steps.inventory.outputs.stem }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            release/*.zip release/*.sha256 \
-            release/*.spdx.json release/*.cdx.json release/*.buildinfo.json \
-            release/*.intoto.jsonl release/*.release.json \
+          assets=(
+            "release/${RELEASE_STEM}.zip"
+            "release/${RELEASE_STEM}.spdx.json"
+            "release/${RELEASE_STEM}.cdx.json"
+            "release/${RELEASE_STEM}.buildinfo.json"
+            "release/${RELEASE_STEM}.intoto.jsonl"
+            "release/${RELEASE_STEM}.release.json"
+            "release/${RELEASE_STEM}.zip.sha256"
+            "release/${RELEASE_STEM}.spdx.json.sha256"
+            "release/${RELEASE_STEM}.cdx.json.sha256"
+            "release/${RELEASE_STEM}.buildinfo.json.sha256"
+            "release/${RELEASE_STEM}.intoto.jsonl.sha256"
+            "release/${RELEASE_STEM}.release.json.sha256"
+            "release/${RELEASE_STEM}.checksums.sha256"
+          )
+          gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
             --verify-tag --generate-notes

@@ -15,7 +15,7 @@ scholarly article, its Lean 4 companion, theorem provenance, reproducibility
 instructions, CI, GitHub Pages deployment, and deterministic release tooling.
 There is no separately maintained manuscript PDF.
 
-**Current artifact release:** `v2.4.2`.
+**Current artifact release:** `v2.4.3`.
 
 [**Read the integrated article**](https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/paper/)
 · [**Open the formalization map**](https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/formalization/)
@@ -122,10 +122,14 @@ agents can begin with [`docs/llms.txt`](docs/llms.txt).
 
 ## Release evidence
 
-A tagged release contains a deterministic source archive, SHA-256 sidecars,
-SPDX 2.3 and CycloneDX 1.5 SBOMs, deterministic build information, a
-machine-readable release index, aggregate checksums, a non-execution-bound
-in-toto/SLSA declaration, and separate hosted GitHub provenance attestations.
+A tagged release contains exactly 13 files: six primary checksum subjects,
+six canonical SHA-256 sidecars, and one ordered aggregate checksum file. The
+set includes the deterministic source archive, SPDX 2.3 and CycloneDX 1.5
+SBOMs, deterministic build information, a machine-readable release index, and
+a non-execution-bound in-toto/SLSA declaration. A read-only job builds and
+verifies that set; a separate tag-only job with publication permissions does
+not check out or execute repository code, rejects any filename or checksum
+drift, and attaches hosted GitHub provenance attestations before upload.
 Together the records bind the archive, SBOMs, proof environment, complete
 Python dependency lock, proof DAG, source manifests, declared release recipe,
 and execution evidence by size and digest.

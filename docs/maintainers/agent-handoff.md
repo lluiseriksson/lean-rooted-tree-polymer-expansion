@@ -2,10 +2,11 @@
 
 ## Mission
 
-Install the v2.4.2 tree, run the complete non-Lean source-package verification,
+Install the v2.4.3 tree, run the complete non-Lean source-package verification,
 let GitHub Actions perform the authoritative single Lean build and exact oracle,
-deploy the integrated article, and publish an immutable source release without
-broadening the mathematical claims.
+deploy the integrated article, and pass the exact release candidate from a
+read-only verification job to a minimal tag-only publisher without broadening
+the mathematical claims.
 
 ## Safe installation
 
@@ -13,7 +14,7 @@ From a clean clone:
 
 ```bash
 rsync -a --delete --exclude='.git/' \
-  /path/to/lean-rooted-tree-polymer-expansion-v2.4.2/ ./
+  /path/to/lean-rooted-tree-polymer-expansion-v2.4.3/ ./
 make docs-setup
 make verify-nonlean
 make package-determinism
@@ -47,12 +48,20 @@ A release is blocked until all of the following hold:
 5. the oracle output contains exactly the documented three axioms and no
    `sorryAx` or project-local axiom;
 6. the deployed Pages site has been checked on desktop and mobile;
-7. ZIP, sidecars, SPDX SBOM, CycloneDX SBOM, build information, deterministic
-   in-toto declaration, release index, and aggregate checksums verify as one set;
+7. the exact 13-file set (six primary artifacts, six canonical sidecars, and
+   one ordered aggregate checksum) verifies with no unexpected entries;
 8. the deterministic in-toto metadata says `executionBound: false` and the
    tagged artifacts have separate hosted GitHub attestations;
 9. the final commit and workflow URLs are recorded;
 10. any DOI is added only after it is minted.
+
+## Publication privilege boundary
+
+The release workflow must keep source checkout, Lean, tests, and packaging in
+the read-only `verify-and-package` job. The privileged `publish` job may only
+download the staged candidate, validate its exact filenames and checksum bytes,
+attest it, and upload explicit paths. It must not check out source, execute a
+repository script, or use a broad `release/*` glob.
 
 ## Claims discipline
 
@@ -75,5 +84,6 @@ claim without a fresh literature review.
 - `scripts/process_runner.py` and `scripts/run_lean_gate.py`
 - `scripts/check_theorem_manifest.py`, `scripts/check_oracle_output.py`, and
   `scripts/check_workflows.py`
-- `scripts/generate_provenance.py` and `scripts/verify_release.py`
+- `scripts/release_inventory.py`, `scripts/generate_provenance.py`, and
+  `scripts/verify_release.py`
 - the claims-boundary language throughout the site

@@ -1,6 +1,6 @@
 # Roadmap
 
-The v2.4.2 theorem interface is intended to remain stable. Future work must be
+The v2.4.3 theorem interface is intended to remain stable. Future work must be
 versioned and must not silently expand the current claims.
 
 1. Deposit the exact verified release in a long-term archive and add the minted
@@ -15,4 +15,4 @@ versioned and must not silently expand the current claims.
 6. Generalize the finite tree engine to other target-preserving polymer
    geometries.
 
-No roadmap item is part of the theorem claimed in v2.4.2.
+No roadmap item is part of the theorem claimed in v2.4.3.
