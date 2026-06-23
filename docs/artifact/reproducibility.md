@@ -131,16 +131,19 @@ The audit rejects missing reports, additional axioms, `sorry`, `admit`,
 make package-determinism
 ```
 
-The command produces:
+The command produces exactly 13 files:
 
-- a source-only deterministic ZIP and per-file SHA-256 sidecar;
-- SPDX 2.3 and CycloneDX 1.5 JSON SBOMs with checksums;
-- deterministic build information;
-- a deterministic in-toto Statement v1 / SLSA provenance declaration;
-- a release evidence index;
-- one aggregate SHA-256 file for all primary evidence.
+- a source-only deterministic ZIP, SPDX 2.3 SBOM, CycloneDX 1.5 SBOM,
+  deterministic build information, deterministic in-toto Statement v1 / SLSA
+  declaration, and release evidence index;
+- one canonical `.sha256` sidecar for each of those six primary files;
+- one ordered aggregate SHA-256 file covering the six primary files.
 
-The evidence set is built twice and must match byte-for-byte. The verifier
+`scripts/release_inventory.py` defines that set once for generators,
+determinism, verification, and documentation. The evidence set is built twice
+and must match byte-for-byte. The verifier rejects missing or unexpected
+release-directory entries and compares every sidecar and aggregate byte for
+byte before it checks the deeper artifact semantics. The verifier
 checks archive path safety, duplicate/non-canonical aliases,
 file/directory conflicts, case/Unicode collisions, portable names, file types,
 member and total sizes, the archive-local manifest, required files, proof pins,
@@ -155,6 +158,17 @@ and the declared release recipe. It explicitly sets `executionBound: false` and
 requires a hosted attestation; it does not claim that a particular GitHub run
 already executed. Tagged releases add separate GitHub build-provenance
 attestations as the execution-bound evidence.
+
+## Privilege-separated tagged publication
+
+The release workflow builds the candidate in a `contents: read` job. Only after
+Lean/oracle and deterministic packaging succeed is the exact `release/`
+directory transferred to a separate semantic-tag-only job. That publisher has
+write/OIDC permissions but does not check out source or execute repository
+scripts. It independently validates the 13 filenames, sidecars, aggregate
+ordering, and release-index identity, then attests and uploads explicit paths.
+The workflow audit rejects wildcard publication and any collapse of this
+boundary.
 
 ## Scheduled drift detection
 

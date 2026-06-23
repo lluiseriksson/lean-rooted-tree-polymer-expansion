@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Generate one machine-readable index and aggregate checksum list for a release."""
+"""Generate the release index and canonical checksum inventory."""
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem, repository_url, site_url
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+from release_inventory import (
+    aggregate_path,
+    checksum_subject_paths,
+    core_artifacts,
+    index_path,
+    render_aggregate,
+    sha256,
+    verify_release_inventory,
+    write_sidecar,
+)
 
 
 def record(path: Path, role: str, media_type: str) -> dict[str, object]:
@@ -31,14 +36,8 @@ def main() -> None:
     project = load_project()
     release_dir = ROOT / "release"
     stem = release_stem(project)
-    files = [
-        (release_dir / f"{stem}.zip", "source-archive", "application/zip"),
-        (release_dir / f"{stem}.spdx.json", "spdx-sbom", "application/spdx+json"),
-        (release_dir / f"{stem}.cdx.json", "cyclonedx-sbom", "application/vnd.cyclonedx+json"),
-        (release_dir / f"{stem}.buildinfo.json", "build-information", "application/json"),
-        (release_dir / f"{stem}.intoto.jsonl", "in-toto-provenance", "application/jsonl"),
-    ]
-    missing = [str(path) for path, _, _ in files if not path.is_file()]
+    files = core_artifacts(project, release_dir)
+    missing = [str(path) for path, _ in files if not path.is_file()]
     if missing:
         raise SystemExit("release-index inputs missing: " + ", ".join(missing))
 
@@ -74,23 +73,21 @@ def main() -> None:
         "source_evidence": {
             name: evidence(path) for name, path in source_files.items()
         },
-        "artifacts": [record(path, role, media) for path, role, media in files],
+        "artifacts": [
+            record(path, spec.role, spec.media_type) for path, spec in files
+        ],
     }
-    index_path = release_dir / f"{stem}.release.json"
-    index_path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    index_digest = sha256(index_path)
-    index_path.with_suffix(index_path.suffix + ".sha256").write_text(
-        f"{index_digest}  {index_path.name}\n", encoding="utf-8"
+    release_index = index_path(project, release_dir)
+    release_index.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    write_sidecar(release_index)
 
-    checksum_paths = [path for path, _, _ in files] + [index_path]
-    checksums_path = release_dir / f"{stem}.checksums.sha256"
-    checksums_path.write_text(
-        "".join(f"{sha256(path)}  {path.name}\n" for path in checksum_paths),
-        encoding="utf-8",
-    )
-    print(f"release index created: {index_path}")
-    print(f"aggregate checksums created: {checksums_path}")
+    checksums = aggregate_path(project, release_dir)
+    checksums.write_bytes(render_aggregate(checksum_subject_paths(project, release_dir)))
+    verify_release_inventory(project, release_dir)
+    print(f"release index created: {release_index}")
+    print(f"aggregate checksums created: {checksums}")
 
 
 if __name__ == "__main__":

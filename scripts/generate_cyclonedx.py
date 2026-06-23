@@ -2,13 +2,13 @@
 """Generate a deterministic CycloneDX 1.5 SBOM from committed lock files."""
 from __future__ import annotations
 
-import hashlib
 import json
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
 from project_config import ROOT, load_project, release_stem, repository_url, site_url
+from release_inventory import sha256, write_sidecar
 from python_requirements import canonical_name, parse_exact_requirements, requirement_map
 
 
@@ -146,8 +146,8 @@ def main() -> None:
         ],
     }
     out.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    digest = hashlib.sha256(out.read_bytes()).hexdigest()
-    out.with_suffix(out.suffix + ".sha256").write_text(f"{digest}  {out.name}\n", encoding="utf-8")
+    digest = sha256(out)
+    write_sidecar(out)
     print(f"CycloneDX SBOM created: {out}")
     print(f"sha256: {digest}")
 

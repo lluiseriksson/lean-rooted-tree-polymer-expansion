@@ -12,14 +12,11 @@ import re
 from pathlib import Path
 
 from project_config import ROOT, load_project, repository_url, site_url
+from source_inventory import collect_source_files
 
 TEXT_SUFFIXES = {
     "", ".md", ".txt", ".json", ".yml", ".yaml", ".toml", ".lean",
     ".py", ".sh", ".cff", ".bib", ".css", ".js",
-}
-EXCLUDED_PARTS = {
-    ".git", ".lake", "site", "release", ".venv", ".venv-docs",
-    "__pycache__", "vendor",
 }
 EXCLUDED_FILES = {"MANIFEST.sha256"}
 
@@ -65,11 +62,11 @@ def main() -> None:
     ]
 
     changed: list[Path] = []
-    for path in sorted(ROOT.rglob("*")):
-        if not path.is_file() or path.name in EXCLUDED_FILES:
+    for path in collect_source_files(ROOT):
+        if path.name in EXCLUDED_FILES:
             continue
         rel = path.relative_to(ROOT)
-        if any(part in EXCLUDED_PARTS for part in rel.parts):
+        if rel.parts and rel.parts[0] == "vendor":
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES:
             continue

@@ -18,8 +18,8 @@ from verify_release import verify_zip  # noqa: E402
 class ReleaseSecurityTests(unittest.TestCase):
     def _write_sidecar(self, path: Path) -> None:
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        path.with_suffix(path.suffix + '.sha256').write_text(
-            f'{digest}  {path.name}\n', encoding='utf-8'
+        path.with_suffix(path.suffix + '.sha256').write_bytes(
+            f'{digest}  {path.name}\n'.encode('utf-8')
         )
 
     def test_path_traversal_is_rejected(self) -> None:

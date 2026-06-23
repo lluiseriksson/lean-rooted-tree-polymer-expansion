@@ -29,22 +29,32 @@ The artifact uses complementary integrity layers.
    collisions, Windows-reserved components, symlinks, non-regular entries,
    encryption, oversized members, unexpected roots, unlisted members, and
    forbidden manuscript binaries.
-10. **Checksums and release index.** Per-file sidecars, an aggregate checksum
-    file, and a machine-readable release index bind the complete evidence set.
-11. **Dual software bills of materials.** Packaging emits SPDX 2.3 and
+10. **Canonical release inventory.** `scripts/release_inventory.py` defines
+    exactly six primary artifacts, six sidecars, and one aggregate checksum.
+    Missing, extra, symlinked, non-regular, reordered, or byte-noncanonical
+    entries fail before publication.
+11. **Checksums and release index.** Per-file sidecars, an ordered aggregate
+    checksum file, and a machine-readable release index bind the complete
+    evidence set.
+12. **Dual software bills of materials.** Packaging emits SPDX 2.3 and
     CycloneDX 1.5 JSON for locked Lean packages, pinned documentation
     dependencies, and GitHub Actions build dependencies.
-12. **Build-information binding.** Deterministic JSON records the proof
+13. **Build-information binding.** Deterministic JSON records the proof
     environment, declared verification entrypoints, and archive/SBOM digests.
-13. **Supervised process lifecycle.** Local Lean, clean-room, and deterministic
+14. **Supervised process lifecycle.** Local Lean, clean-room, and deterministic
     evidence subprocesses run in isolated process groups and are terminated as
     a complete tree on timeout, interrupt, or parent loss.
-14. **Clean-room archive test.** The ZIP is safely extracted into a temporary
+15. **Clean-room archive test.** The ZIP is safely extracted into a temporary
     directory and audited using only its own source tree.
-15. **Scheduled cold-cache verification.** A monthly workflow rebuilds Lean
+16. **Scheduled cold-cache verification.** A monthly workflow rebuilds Lean
     without the GitHub Lean cache and recreates the release evidence.
-16. **Hosted provenance.** Tagged releases request GitHub build-provenance
-    attestations for the source archive and JSON evidence files.
+17. **Privilege-separated publication.** Source checkout, Lean, tests, and
+    packaging run with read-only permission. A distinct tag-only job receives
+    write and OIDC permissions, executes no repository code, validates the
+    transferred candidate, and publishes explicit paths without globs.
+18. **Hosted provenance.** Tagged releases request GitHub build-provenance
+    attestations for the source archive and JSON evidence files only after the
+    exact asset set has passed the privileged-job validator.
 
 GitHub Actions and Python documentation packages are monitored by Dependabot.
 The action policy uses full immutable commit SHAs. Dependabot may propose

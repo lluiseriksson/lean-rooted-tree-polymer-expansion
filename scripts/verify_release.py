@@ -20,6 +20,7 @@ from project_config import (
     site_url,
 )
 from python_requirements import canonical_name, parse_exact_requirements, requirement_map
+from release_inventory import core_artifacts, verify_release_inventory, verify_sidecar
 
 
 def sha256(path: Path) -> str:
@@ -32,18 +33,6 @@ def _load_json(path: Path) -> dict[str, Any]:
         raise ValueError(f"expected JSON object: {path}")
     return value
 
-
-def _sidecar_ok(path: Path) -> None:
-    sidecar = path.with_suffix(path.suffix + ".sha256")
-    if not sidecar.is_file():
-        raise ValueError(f"missing checksum sidecar: {sidecar}")
-    parts = sidecar.read_text(encoding="utf-8").strip().split()
-    if len(parts) < 2 or parts[1] != path.name:
-        raise ValueError(f"malformed checksum sidecar: {sidecar}")
-    if parts[0] != sha256(path):
-        raise ValueError(f"checksum mismatch for {path.name}")
-
-
 def _schema_validate(path: Path, schema_path: Path) -> None:
     try:
         import jsonschema  # type: ignore
@@ -54,11 +43,22 @@ def _schema_validate(path: Path, schema_path: Path) -> None:
     jsonschema.Draft202012Validator(schema).validate(data)
 
 
+def _expected_proof_environment(project: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "lean_toolchain": project["lean_toolchain"],
+        "mathlib_commit": project["mathlib_commit"],
+        "upstream_repository": project["upstream_repository"],
+        "upstream_commit": project["upstream_commit"],
+        "elan_installer_commit": project["elan_installer_commit"],
+        "elan_installer_blob_sha": project["elan_installer_blob_sha"],
+    }
+
+
 def verify_zip(zip_path: Path, project: dict[str, Any]) -> str:
     stem = release_stem(project)
     if not zip_path.is_file():
         raise ValueError(f"no release ZIP found: {zip_path}")
-    _sidecar_ok(zip_path)
+    verify_sidecar(zip_path)
     actual = sha256(zip_path)
 
     with zipfile.ZipFile(zip_path) as archive:
@@ -356,6 +356,7 @@ def _verify_provenance(path: Path, artifacts: dict[str, Path], project: dict[str
 def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
     stem = release_stem(project)
     release_dir = zip_path.parent
+    verify_release_inventory(project, release_dir)
     artifacts = {
         "zip": zip_path,
         "spdx": release_dir / f"{stem}.spdx.json",
@@ -364,18 +365,27 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
         "provenance": release_dir / f"{stem}.intoto.jsonl",
         "release_index": release_dir / f"{stem}.release.json",
     }
-    for path in artifacts.values():
-        if not path.is_file():
-            raise ValueError(f"missing release companion: {path}")
-        _sidecar_ok(path)
-
     _verify_sboms(artifacts["spdx"], artifacts["cyclonedx"], project)
 
     buildinfo = _load_json(artifacts["buildinfo"])
     if buildinfo.get("schema_version") != 2:
         raise ValueError("build-info schema mismatch")
-    if buildinfo.get("project", {}).get("version") != project["version"]:
-        raise ValueError("build-info project version mismatch")
+    expected_project = {
+        "name": project["repository_slug"],
+        "version": project["version"],
+        "release_date": project["release_date"],
+        "repository": repository_url(project),
+        "documentation": site_url(project),
+        "publication_model": project["publication_model"],
+        "release_profile": project["release_profile"],
+        "minimum_python": project["minimum_python"],
+        "python_lock": project["python_lock"],
+        "provenance_format": project["provenance_format"],
+    }
+    if buildinfo.get("project") != expected_project:
+        raise ValueError("build-info project identity mismatch")
+    if buildinfo.get("proof_environment") != _expected_proof_environment(project):
+        raise ValueError("build-info proof environment mismatch")
     expected_sources = {
         "python_lock": project["python_lock"],
         "theorem_manifest": "archive/theorem-manifest.json",
@@ -385,8 +395,11 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
         "source_manifest": "MANIFEST.sha256",
         "citation_schema": project["citation_schema"],
     }
+    source_inputs = buildinfo.get("source_inputs")
+    if not isinstance(source_inputs, dict) or set(source_inputs) != set(expected_sources):
+        raise ValueError("build-info source input set mismatch")
     for key, rel in expected_sources.items():
-        record = buildinfo.get("source_inputs", {}).get(key, {})
+        record = source_inputs.get(key, {})
         if record.get("path") != rel or record.get("sha256") != sha256(ROOT / rel):
             raise ValueError(f"build-info source input mismatch: {key}")
     expected_verification = {
@@ -403,11 +416,25 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
     }
     if buildinfo.get("verification") != expected_verification:
         raise ValueError("build-info verification policy mismatch")
-    records = {item.get("name"): item for item in buildinfo.get("artifacts", []) if isinstance(item, dict)}
-    for key in ("zip", "spdx", "cyclonedx"):
-        path = artifacts[key]
-        record = records.get(path.name)
-        if not record or record.get("sha256") != sha256(path) or record.get("bytes") != path.stat().st_size:
+    buildinfo_items = buildinfo.get("artifacts")
+    expected_buildinfo = (
+        (artifacts["zip"], "application/zip"),
+        (artifacts["spdx"], "application/spdx+json"),
+        (artifacts["cyclonedx"], "application/vnd.cyclonedx+json"),
+    )
+    if not isinstance(buildinfo_items, list) or len(buildinfo_items) != len(
+        expected_buildinfo
+    ):
+        raise ValueError("build-info artifact count mismatch")
+    for record, (path, media_type) in zip(buildinfo_items, expected_buildinfo):
+        if not isinstance(record, dict):
+            raise ValueError("build-info artifact record must be an object")
+        if record.get("name") != path.name or record.get("media_type") != media_type:
+            raise ValueError(f"build-info artifact identity mismatch: {path.name}")
+        if (
+            record.get("sha256") != sha256(path)
+            or record.get("bytes") != path.stat().st_size
+        ):
             raise ValueError(f"build-info digest/size mismatch: {path.name}")
 
     _verify_provenance(artifacts["provenance"], artifacts, project)
@@ -415,10 +442,39 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
     release_index = _load_json(artifacts["release_index"])
     if release_index.get("schema_version") != 2:
         raise ValueError("release-index schema mismatch")
-    if release_index.get("release", {}).get("version") != project["version"]:
-        raise ValueError("release-index version mismatch")
-    index_records = {item.get("name"): item for item in release_index.get("artifacts", []) if isinstance(item, dict)}
-    source_evidence = release_index.get("source_evidence", {})
+    expected_release = {
+        "name": stem,
+        "version": project["version"],
+        "date": project["release_date"],
+        "repository": repository_url(project),
+        "documentation": site_url(project),
+        "profile": project["release_profile"],
+        "provenance_format": project["provenance_format"],
+    }
+    if release_index.get("release") != expected_release:
+        raise ValueError("release-index release identity mismatch")
+    if release_index.get("proof_environment") != _expected_proof_environment(project):
+        raise ValueError("release-index proof environment mismatch")
+    index_items = release_index.get("artifacts")
+    expected_index = core_artifacts(project, release_dir)
+    if not isinstance(index_items, list) or len(index_items) != len(expected_index):
+        raise ValueError("release-index artifact count mismatch")
+    for item, (path, spec) in zip(index_items, expected_index):
+        if not isinstance(item, dict):
+            raise ValueError("release-index artifact record must be an object")
+        expected_identity = {
+            "name": path.name,
+            "role": spec.role,
+            "media_type": spec.media_type,
+        }
+        for key, expected in expected_identity.items():
+            if item.get(key) != expected:
+                raise ValueError(
+                    f"release-index artifact {key} mismatch: {path.name}"
+                )
+        if item.get("sha256") != sha256(path) or item.get("bytes") != path.stat().st_size:
+            raise ValueError(f"release-index digest/size mismatch: {path.name}")
+    source_evidence = release_index.get("source_evidence")
     required_evidence = {
         "project_metadata": "project.json",
         "theorem_manifest": "archive/theorem-manifest.json",
@@ -429,6 +485,10 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
         "citation_schema": project["citation_schema"],
         "source_manifest": "MANIFEST.sha256",
     }
+    if not isinstance(source_evidence, dict) or set(source_evidence) != set(
+        required_evidence
+    ):
+        raise ValueError("release index source-evidence set mismatch")
     with zipfile.ZipFile(zip_path) as archive:
         for key, expected_path in required_evidence.items():
             record = source_evidence.get(key)
@@ -437,27 +497,6 @@ def verify_companion_files(zip_path: Path, project: dict[str, Any]) -> None:
             archived = archive.read(f"{stem}/{expected_path}")
             if record.get("sha256") != hashlib.sha256(archived).hexdigest():
                 raise ValueError(f"release index source-evidence digest mismatch: {key}")
-    for key in ("zip", "spdx", "cyclonedx", "buildinfo", "provenance"):
-        path = artifacts[key]
-        record = index_records.get(path.name)
-        if not record or record.get("sha256") != sha256(path) or record.get("bytes") != path.stat().st_size:
-            raise ValueError(f"release-index digest/size mismatch: {path.name}")
-
-    checksums = release_dir / f"{stem}.checksums.sha256"
-    if not checksums.is_file():
-        raise ValueError(f"missing aggregate checksum file: {checksums}")
-    checksum_rows: dict[str, str] = {}
-    for line in checksums.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        digest, name = line.split("  ", 1)
-        if name in checksum_rows:
-            raise ValueError(f"duplicate aggregate checksum entry: {name}")
-        checksum_rows[name] = digest
-    for path in artifacts.values():
-        if checksum_rows.get(path.name) != sha256(path):
-            raise ValueError(f"aggregate checksum mismatch: {path.name}")
-
     _schema_validate(artifacts["buildinfo"], ROOT / "schemas/buildinfo.schema.json")
     _schema_validate(artifacts["release_index"], ROOT / "schemas/release-index.schema.json")
     _schema_validate(artifacts["provenance"], ROOT / "schemas/provenance.schema.json")

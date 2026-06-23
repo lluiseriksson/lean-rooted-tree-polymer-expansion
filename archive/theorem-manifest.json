@@ -1,6 +1,6 @@
 {
   "artifact": "Marked Rooted-Tree Summation for Polymer Cluster Expansions with Holes: A Lean 4 Formalization",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "publication_model": "integrated-documentation",
   "proof_dag": "archive/proof-dag.json",
   "upstream": {

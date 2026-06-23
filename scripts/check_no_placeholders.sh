@@ -8,7 +8,12 @@ while IFS= read -r file; do
     echo "placeholder found in $file" >&2
     bad=1
   fi
-done < <(find . -path './.lake' -prune -o -name '*.lean' -type f -print)
+done < <(
+  find . \
+    \( -path './.git' -o -path './.lake' -o -path './site' -o \
+       -path './release' -o -path './.venv' -o -path './.venv-docs' \) \
+    -prune -o -name '*.lean' -type f -print
+)
 
 if [[ "$bad" -ne 0 ]]; then
   exit 1

@@ -8,12 +8,12 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from project_config import ROOT
+from source_inventory import collect_source_files
 
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 HTML_LINK_RE = re.compile(r"(?:href|src)=[\"']([^\"']+)[\"']")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 EXPLICIT_ID_RE = re.compile(r"\s*\{#([A-Za-z0-9_.:-]+)\}\s*$")
-EXCLUDED = {".git", ".lake", "site", "release", ".venv", ".venv-docs", "__pycache__"}
 
 
 def slugify_heading(value: str) -> str:
@@ -69,10 +69,11 @@ def anchors_for(path: Path) -> set[str]:
 
 
 errors: list[str] = []
-files = [
-    p for p in ROOT.rglob("*.md")
-    if not any(part in EXCLUDED for part in p.relative_to(ROOT).parts)
-]
+files = [path for path in collect_source_files(ROOT) if path.suffix.lower() == ".md"]
+generated = ROOT / "docs" / "generated" / "full-article.md"
+if generated.is_file():
+    files.append(generated)
+files.sort(key=lambda path: path.relative_to(ROOT).as_posix())
 anchor_cache: dict[Path, set[str]] = {}
 
 for source in files:

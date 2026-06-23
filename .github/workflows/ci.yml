@@ -69,15 +69,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: source-package-preview
-          path: |
-            release/*.zip
-            release/*.sha256
-            release/*.spdx.json
-            release/*.cdx.json
-            release/*.buildinfo.json
-            release/*.intoto.jsonl
-            release/*.release.json
-            release/*.checksums.sha256
+          path: release/
           if-no-files-found: error
           retention-days: 14
 

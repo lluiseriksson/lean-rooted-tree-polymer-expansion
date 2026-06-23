@@ -1,60 +1,37 @@
-# Migration to v2.4.2
+# Migration to v2.4.3
 
-Version 2.4.2 preserves the v2.4.1 mathematical interface and release evidence
-format while replacing unsupervised local Lean/Lake execution and duplicate CI
-builds with an explicit single-build gate.
+Version 2.4.3 preserves the v2.4.2 mathematical interface, exact theorem
+statements, proof-source pins, and 13-file evidence format. The change is at the
+publication boundary: release construction now runs with read-only repository
+permission, while a separate tag-only job receives the minimum permissions
+needed to attest and publish an already verified candidate.
 
-## Replacement procedure
+## Replace, do not overlay
 
 Use a delete-aware copy so obsolete files and generated caches do not survive:
 
 ```bash
 rsync -a --delete --exclude='.git/' \
-  /path/to/lean-rooted-tree-polymer-expansion-v2.4.2/ ./
+  /path/to/lean-rooted-tree-polymer-expansion-v2.4.3/ ./
 make docs-setup
 make verify-nonlean
 make package-determinism
 ```
 
-Push without tagging. GitHub Actions performs the authoritative Lean build in
-the pinned Linux environment and then runs `make lean-oracle`. Tag `v2.4.2` only
-after Lean, static/docs, package reproducibility, clean-room, and Pages checks
-are green.
+The local package gate must produce exactly 13 regular files in `release/`:
+six checksum subjects, six canonical sidecars, and one aggregate checksum.
+Unexpected, missing, symlinked, reordered, or checksum-inconsistent entries are
+fatal.
 
-## Local Lean verification
+Push without tagging. GitHub Actions performs the authoritative Lean build and
+oracle audit in the pinned Linux environment. Tag `v2.4.3` only after the Lean,
+leanchecker, documentation, deterministic package, clean-room, provenance, and
+Pages checks are green.
 
-A maintainer who intentionally wants the full local gate should run:
+## Publication boundary
 
-```bash
-make lean
-```
-
-Do not invoke long-running `lake build` commands through an external timeout.
-The Make target uses `scripts/run_lean_gate.py`, which terminates the complete
-process tree on timeout, interrupt, or parent loss. The defaults can be adjusted
-without bypassing supervision:
-
-```bash
-make lean LEAN_BUILD_TIMEOUT=5400 LEAN_ORACLE_TIMEOUT=900
-```
-
-`make lock-refresh` and `make clean` also route their Lake subprocesses through
-the same supervisor. A command that exits while leaving a background descendant
-is treated as a failure and that descendant group is terminated.
-
-## CI workflow change
-
-The pinned Lean action now builds `MarkedRootedClosure` exactly once and runs
-the pinned Lean environment checker. Workflows must keep the explicit policy
-block and follow it with `make lean-oracle`; the workflow audit rejects a return
-to implicit auto-configuration, removal of `leanchecker: true`, or a second full
-Lean build.
-
-## Release evidence boundary
-
-The deterministic local in-toto statement is a reproducible declaration of
-subjects, source inputs, dependencies, and required external gates. It is not an
-execution attestation. Tagged releases continue to publish separate GitHub
-build-provenance attestations for execution-bound evidence. The release verifier
-and JSON Schema require this boundary exactly and reject metadata that claims a
-hosted execution occurred locally.
+The tagged workflow transfers the verified `release/` directory into a separate
+publisher. The publisher does not check out the repository and must not run
+repository scripts. It validates the exact asset inventory using an inline,
+dependency-free check and passes all 13 filenames explicitly to the release
+command; broad `release/*` globs are forbidden.

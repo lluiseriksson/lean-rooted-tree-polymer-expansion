@@ -2,7 +2,7 @@
 
 ## Repository and verification
 
-- [ ] Install the complete v2.4.2 replacement tree with deletion enabled.
+- [ ] Install the complete v2.4.3 replacement tree with deletion enabled.
 - [ ] Confirm `lake-manifest.json` is tracked and unchanged by ordinary builds.
 - [ ] Run `make verify-nonlean` and `make package-determinism` locally.
 - [ ] Confirm GitHub Actions performs one explicit Lean build from the committed Lake graph.
@@ -17,7 +17,7 @@
 - [ ] Verify ZIP and JSON sidecars, aggregate checksums, SPDX SBOM, CycloneDX
       SBOM, build info, release index, deterministic in-toto declaration, and
       separate hosted provenance attestations.
-- [ ] Create a signed or annotated `v2.4.2` tag only after all gates pass.
+- [ ] Create a signed or annotated `v2.4.3` tag only after all gates pass.
 - [ ] Archive the exact tagged release.
 
 ## Scholarly metadata

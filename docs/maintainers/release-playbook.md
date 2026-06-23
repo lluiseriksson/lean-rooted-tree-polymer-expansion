@@ -33,7 +33,7 @@ The required publication gate remains the green GitHub Actions Lean job.
 Use the structured updater rather than global search-and-replace:
 
 ```bash
-python3 scripts/bump_version.py 2.4.2 --date 2026-06-23
+python3 scripts/bump_version.py 2.4.3 --date 2026-06-23
 ```
 
 Then write the changelog entry, refresh the reviewed source inventory, and run:
@@ -53,11 +53,13 @@ before the archive has minted it.
 make package-determinism
 ```
 
-This produces a source ZIP, per-file and aggregate checksums, SPDX 2.3 and
-CycloneDX 1.5 SBOMs, deterministic build information, a deterministic in-toto
-declaration, and a machine-readable release index in `release/`. It also
-extracts the ZIP into a temporary clean-room tree and reruns the dependency-free
-audits under the process-tree supervisor.
+This produces the exact 13-file release protocol in `release/`: six primary
+artifacts, their six canonical sidecars, and one ordered aggregate checksum.
+The primary set is the source ZIP, SPDX 2.3 and CycloneDX 1.5 SBOMs,
+deterministic build information, a deterministic in-toto declaration, and a
+machine-readable release index. The command rejects any unexpected file and
+also extracts the ZIP into a temporary clean-room tree to rerun the
+dependency-free audits under the process-tree supervisor.
 
 The deterministic in-toto statement is not an execution attestation. Confirm it
 records `executionBound: false`; the tagged GitHub workflow supplies separate
@@ -77,14 +79,17 @@ URLs.
 Create a signed or annotated tag only after the clean CI run:
 
 ```bash
-git tag -s v2.4.2 -m "v2.4.2 supervised verification and CI gate release"
-git push origin v2.4.2
+git tag -s v2.4.3 -m "v2.4.3 privilege-separated exact-asset release"
+git push origin v2.4.3
 ```
 
-The release workflow verifies tag/version agreement, performs one Lean build,
-audits the exact oracle, rebuilds deterministic evidence, requests hosted
-provenance attestations, and publishes the ZIP, sidecars, both SBOMs, build info,
-local in-toto declaration, release index, and aggregate checksums.
+The read-only release job verifies tag/version agreement, performs one Lean
+build, audits the exact oracle, and rebuilds deterministic evidence. It passes a
+short-lived candidate to a separate tag-only publisher. The publisher does not
+check out or execute repository code; it reconstructs and verifies the exact 13
+filenames and checksum bytes, requests hosted provenance attestations, and
+uploads every path explicitly. Any wildcard publication or permission collapse
+is a workflow-policy failure.
 
 ## 7. Archive and cite
 

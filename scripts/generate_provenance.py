@@ -2,16 +2,13 @@
 """Generate a deterministic in-toto Statement v1 with SLSA provenance v1."""
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 from project_config import ROOT, load_project, release_stem, repository_url, site_url
+from release_inventory import sha256, write_sidecar
 
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def subject(path: Path) -> dict[str, object]:
@@ -133,9 +130,7 @@ def main() -> None:
         encoding="utf-8",
     )
     digest = sha256(out)
-    out.with_suffix(out.suffix + ".sha256").write_text(
-        f"{digest}  {out.name}\n", encoding="utf-8"
-    )
+    write_sidecar(out)
     print(f"in-toto provenance created: {out}")
     print(f"sha256: {digest}")
 

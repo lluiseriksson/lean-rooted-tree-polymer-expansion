@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from project_config import ROOT, load_project, repository_full_name, repository_url, site_url
+from source_inventory import collect_source_files
 
 project = load_project()
 version = project["version"]
@@ -48,13 +49,8 @@ if previous:
         f"https://github.com/{project['repository_owner']}/{previous}",
         f"https://{project['repository_owner']}.github.io/{previous}/",
     ]
-for path in ROOT.rglob("*"):
-    if not path.is_file():
-        continue
+for path in collect_source_files(ROOT):
     rel = path.relative_to(ROOT)
-    if any(part in {".git", ".lake", "site", "release", ".venv", ".venv-docs", "__pycache__"}
-           for part in rel.parts):
-        continue
     if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
         continue
     try:
