@@ -69,6 +69,23 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append(f'{rel}: checkout must disable persisted credentials')
         if path.name in {'ci.yml', 'pages.yml', 'maintenance.yml'} and 'lake update' in text:
             errors.append(f'{rel}: verification workflows must not refresh the Lake lock')
+        if 'leanprover/lean-action@' in text:
+            for policy in (
+                'auto-config: false',
+                'build: true',
+                'build-args: MarkedRootedClosure',
+                'leanchecker: true',
+            ):
+                if policy not in text:
+                    errors.append(f'{rel}: lean-action missing explicit policy: {policy}')
+            duplicate_gate = re.compile(
+                r'^\s*run:\s*make\s+(?:lean|verify|release)\s*$', re.MULTILINE
+            )
+            if duplicate_gate.search(text):
+                errors.append(
+                    f'{rel}: lean-action build must be followed by make lean-oracle, '
+                    'not a second full Lean build'
+                )
         if 'actions/setup-python@' in text:
             if 'cache-dependency-path: requirements-docs.lock' not in text:
                 errors.append(f'{rel}: Python cache must key from requirements-docs.lock')
@@ -90,7 +107,12 @@ def validate(root: Path = ROOT) -> list[str]:
         errors.append('actions manifest contains unused entries: ' + ', '.join(unused))
 
     ci = (workflows / 'ci.yml').read_text(encoding='utf-8')
-    for needle in ('make test', 'make package-determinism', 'make smoke-release'):
+    for needle in (
+        'make verify-nonlean',
+        'make package-determinism',
+        'make smoke-release',
+        'make lean-oracle',
+    ):
         if needle not in ci:
             errors.append(f'ci.yml missing required command: {needle}')
     for suffix in ('*.spdx.json', '*.cdx.json', '*.buildinfo.json', '*.intoto.jsonl', '*.release.json', '*.checksums.sha256'):
@@ -102,6 +124,9 @@ def validate(root: Path = ROOT) -> list[str]:
     pages = (workflows / 'pages.yml').read_text(encoding='utf-8')
     release = (workflows / 'release.yml').read_text(encoding='utf-8')
     maintenance = (workflows / 'maintenance.yml').read_text(encoding='utf-8')
+    for name, text in (('ci.yml', ci), ('release.yml', release)):
+        if 'use-github-cache: true' not in text:
+            errors.append(f'{name} must enable the pinned Lean GitHub cache')
     for name, text in (('pages.yml', pages), ('release.yml', release), ('maintenance.yml', maintenance)):
         if guard not in text:
             errors.append(f'{name} must guard privileged work to the canonical repository')
@@ -111,9 +136,18 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append(f'release.yml does not publish {suffix}')
     if '--verify-tag' not in release:
         errors.append('release.yml must verify the release tag')
-    for needle in ('make verify', 'make package-determinism', 'use-github-cache: false'):
+    for needle in (
+        'make lean-oracle',
+        'make package-determinism',
+        'use-github-cache: false',
+    ):
         if needle not in maintenance:
             errors.append(f'maintenance.yml missing clean-room command/policy: {needle}')
+    for needle in ('make lean-oracle', 'make package-determinism'):
+        if needle not in release:
+            errors.append(f'release.yml missing required command: {needle}')
+    if 'make verify-nonlean' not in pages:
+        errors.append('pages.yml must run the complete non-Lean verification target')
     return errors
 
 

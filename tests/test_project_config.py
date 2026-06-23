@@ -24,7 +24,7 @@ class ProjectConfigTests(unittest.TestCase):
         self.assertEqual(repository_full_name(project), "lluiseriksson/lean-rooted-tree-polymer-expansion")
         self.assertEqual(repository_url(project), "https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion")
         self.assertEqual(site_url(project), "https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/")
-        self.assertEqual(release_stem(project), "lean-rooted-tree-polymer-expansion-v2.4.0")
+        self.assertEqual(release_stem(project), "lean-rooted-tree-polymer-expansion-v2.4.2")
 
     def test_missing_required_field_is_rejected(self) -> None:
         project = load_project(ROOT)

@@ -31,6 +31,10 @@ jobs:
           cache-dependency-path: requirements-docs.lock
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
+          auto-config: false
+          build: true
+          build-args: MarkedRootedClosure
+          leanchecker: true
           use-github-cache: true
       - name: Install documentation dependencies
         run: |
@@ -46,8 +50,10 @@ jobs:
           if tag != f'v{version}':
               raise SystemExit(f'tag {tag!r} does not match project version v{version}')
           PY
-      - name: Verify and package twice
-        run: make release
+      - name: Audit exact oracle output
+        run: make lean-oracle
+      - name: Verify non-Lean layers and package twice
+        run: make package-determinism
       - name: Attest source archive provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
@@ -83,5 +89,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             release/*.zip release/*.sha256 \
             release/*.spdx.json release/*.cdx.json release/*.buildinfo.json \
-            release/*.intoto.jsonl release/*.release.json \
+            release/*.intoto.jsonl release/*.release.json release/*.checksums.sha256 \
             --verify-tag --generate-notes

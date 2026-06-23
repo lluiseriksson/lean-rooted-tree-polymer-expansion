@@ -1,4 +1,4 @@
-# Repository audit for v2.4.0
+# Repository audit for v2.4.2
 
 **Audit date:** 2026-06-23
 **Current remote:** `lluiseriksson/lean-rooted-tree-polymer-expansion`
@@ -22,7 +22,7 @@ stable Lean namespace were already consistent in the live v2.1.0 tree.
 - Removed obsolete rename-proposal material while preserving an explicit
   repository-history record.
 
-## Additional hardening in v2.4.0
+## Hardening accumulated through v2.4.1
 
 1. **Statement-level proof identity.** Each public theorem declaration now has a
    whitespace-stable SHA-256 fingerprint, so binder or conclusion drift is
@@ -45,8 +45,9 @@ stable Lean namespace were already consistent in the live v2.1.0 tree.
 8. **Release evidence graph.** A machine-readable release index and aggregate
    checksums bind the ZIP, SPDX SBOM, CycloneDX SBOM, build information, proof
    pins, and source manifest.
-9. **Archive attack resistance.** Verification rejects duplicate names,
-   path traversal, case-folding and Unicode-normalization collisions, symlinks,
+9. **Archive attack resistance.** Verification rejects duplicate or
+   non-canonical names, path traversal, file/directory conflicts, case-folding
+   and Unicode-normalization collisions, Windows-reserved names, symlinks,
    non-regular members, encryption, malformed manifests, and size abuse.
 10. **Agent-safe discovery.** `docs/llms.txt` gives tools a compact canonical
     map of theorem endpoints, proof pins, high-value files, and claim limits.
@@ -68,15 +69,28 @@ or mathematical claim changes in this release.
 ## External release gate
 
 The assembled source package can run all dependency-free audits and release
-integrity checks locally. A fresh Lean kernel rebuild, exact oracle run, strict
-MkDocs build, Pages inspection, and tagged provenance attestation remain
-mandatory GitHub Actions gates before publishing v2.4.0.
+integrity checks locally. The authoritative GitHub Actions gate must perform one
+explicit Lean kernel build from the committed Lake graph, run the exact oracle,
+build strict documentation, deploy Pages, reproduce the package, smoke-test the
+archive, and attach hosted provenance before publishing v2.4.2.
 
-## v2.4.0 audit delta
+## v2.4.2 audit delta
 
-The audit found and removed a real dependency conflict between the former CFF
-validator and the pinned modern JSON Schema package. The replacement uses a
-committed CFF profile, a complete exact transitive Python lock, dual-SBOM lock
-coverage, proof-DAG checks, accessibility checks, safe archive extraction, and
-deterministic in-toto/SLSA provenance. Public Lean statements and proof pins are
+The v2.4.2 review found that the pinned Lean action's default automatic
+configuration already ran `lake build`, while the following `make lean` step ran
+the same build again. All Lean workflows now configure one explicit action build
+and follow it with `make lean-oracle`; workflow tests reject a regression to
+implicit configuration or duplicate compilation.
+
+The review also reproduced the lifecycle hazard reported after a local timeout:
+killing a Make or shell parent can leave Lean/Lake descendants alive. The new
+dependency-free process runner isolates commands in their own process group,
+monitors timeout, signals, and parent loss, and terminates the complete tree.
+Regression tests cover descendant cleanup and Lake-lock drift without invoking
+the real Lean toolchain.
+
+Finally, the deterministic in-toto statement no longer identifies itself as an
+execution-bound release workflow run. It declares the reproducible recipe and
+required external gates, while tagged GitHub attestations remain the separate
+hosted execution evidence. Public Lean statements, proof pins, and claims are
 unchanged.

@@ -9,42 +9,31 @@ from datetime import date
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem
+from source_inventory import MANIFEST_REL, collect_source_files, render_manifest
 
 project = load_project()
 name = release_stem(project)
 out = ROOT / "release"
 zip_path = out / f"{name}.zip"
 sidecar = out / f"{name}.zip.sha256"
-excluded_roots = {
-    ".git", ".lake", "site", "release", ".venv", ".venv-docs",
-    "__pycache__", "docs/generated",
-}
 release_date = date.fromisoformat(project["release_date"])
 fixed_time = (release_date.year, release_date.month, release_date.day, 12, 0, 0)
-
-
-def is_excluded(rel: Path) -> bool:
-    value = rel.as_posix()
-    return (
-        any(value == item or value.startswith(item + "/") for item in excluded_roots)
-        or any(part in {"__pycache__", ".pytest_cache", ".mypy_cache"} for part in rel.parts)
-    )
 
 
 shutil.rmtree(out, ignore_errors=True)
 out.mkdir(parents=True)
 
-files: list[Path] = []
-for path in sorted(ROOT.rglob("*"), key=lambda p: p.as_posix()):
-    if not path.is_file():
-        continue
-    rel = path.relative_to(ROOT)
-    if is_excluded(rel):
-        continue
-    files.append(path)
+source_files = collect_source_files(ROOT, include_manifest=False)
+manifest_bytes = render_manifest(ROOT, source_files)
+(ROOT / MANIFEST_REL).write_bytes(manifest_bytes)
+files = sorted(
+    [*source_files, ROOT / MANIFEST_REL],
+    key=lambda path: path.relative_to(ROOT).as_posix(),
+)
 
 required = {
     Path("project.json"),
+    MANIFEST_REL,
     Path("lake-manifest.json"),
     Path("docs/paper/manifest.json"),
     Path("archive/theorem-manifest.json"),
@@ -55,19 +44,10 @@ missing = required - found
 if missing:
     raise SystemExit("release input missing required files: " + ", ".join(map(str, sorted(missing))))
 
-manifest_rows = []
-for path in files:
-    if path.name == "MANIFEST.sha256":
-        continue
-    rel = path.relative_to(ROOT).as_posix()
-    manifest_rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {rel}")
-manifest_bytes = ("\n".join(manifest_rows) + "\n").encode("utf-8")
-(ROOT / "MANIFEST.sha256").write_bytes(manifest_bytes)
-
 with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
     for path in files:
         rel = path.relative_to(ROOT).as_posix()
-        data = manifest_bytes if rel == "MANIFEST.sha256" else path.read_bytes()
+        data = manifest_bytes if rel == MANIFEST_REL.as_posix() else path.read_bytes()
         info = zipfile.ZipInfo(f"{name}/{rel}", fixed_time)
         info.compress_type = zipfile.ZIP_DEFLATED
         mode = 0o755 if path.stat().st_mode & stat.S_IXUSR else 0o644

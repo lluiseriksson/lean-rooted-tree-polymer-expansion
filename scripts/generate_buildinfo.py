@@ -79,11 +79,9 @@ def main() -> None:
         ],
         "verification": {
             "source_commands": [
-                "make test",
-                "make syntax",
-                "make static",
-                "make docs",
-                "make lean",
+                "make verify-nonlean",
+                "leanprover/lean-action build MarkedRootedClosure",
+                "make lean-oracle",
                 "make package-determinism",
                 "make smoke-release",
             ],

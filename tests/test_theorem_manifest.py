@@ -24,7 +24,8 @@ class TheoremManifestTests(unittest.TestCase):
                 ROOT,
                 copy,
                 ignore=shutil.ignore_patterns(
-                    ".git", ".lake", "site", "release", "docs/generated", "__pycache__"
+                    ".git", ".lake", "site", "release", ".venv*",
+                    "__pycache__", ".pytest_cache", ".mypy_cache"
                 ),
             )
             manifest_path = copy / "archive" / "theorem-manifest.json"
@@ -41,7 +42,8 @@ class TheoremManifestTests(unittest.TestCase):
                 ROOT,
                 copy,
                 ignore=shutil.ignore_patterns(
-                    ".git", ".lake", "site", "release", "docs/generated", "__pycache__"
+                    ".git", ".lake", "site", "release", ".venv*",
+                    "__pycache__", ".pytest_cache", ".mypy_cache"
                 ),
             )
             wrapper = copy / "MarkedRootedClosure" / "PaperTheorems.lean"

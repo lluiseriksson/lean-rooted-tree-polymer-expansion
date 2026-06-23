@@ -7,7 +7,7 @@ import MarkedRootedClosure.PaperTheorems
 Run with:
 
 ```bash
-lake env lean MarkedRootedClosure/Oracle.lean
+make lean-oracle  # after build; use `make lean` for both phases
 ```
 
 The output should list only the standard classical axioms inherited from

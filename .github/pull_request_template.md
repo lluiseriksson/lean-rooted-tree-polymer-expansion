@@ -8,8 +8,8 @@
 
 ## Verification
 
-- [ ] `make static`
-- [ ] `make verify`
+- [ ] `make verify-nonlean`
+- [ ] GitHub Actions single Lean build and `make lean-oracle` are green
 - [ ] Clean-cache CI requested where dependency pins changed
 
 ## Reproducibility

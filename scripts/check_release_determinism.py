@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 from project_config import ROOT, load_project, release_stem
+from process_runner import run_checked
 
 project = load_project()
 stem = release_stem(project)
@@ -32,12 +32,15 @@ primary = [
 
 
 def build() -> None:
-    subprocess.run([sys.executable, "scripts/make_release.py"], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, "scripts/generate_sbom.py"], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, "scripts/generate_cyclonedx.py"], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, "scripts/generate_buildinfo.py"], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, "scripts/generate_provenance.py"], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, "scripts/generate_release_index.py"], cwd=ROOT, check=True)
+    for relative in (
+        "scripts/make_release.py",
+        "scripts/generate_sbom.py",
+        "scripts/generate_cyclonedx.py",
+        "scripts/generate_buildinfo.py",
+        "scripts/generate_provenance.py",
+        "scripts/generate_release_index.py",
+    ):
+        run_checked([sys.executable, relative], cwd=ROOT, timeout=180)
 
 
 with tempfile.TemporaryDirectory() as temp:

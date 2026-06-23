@@ -17,13 +17,16 @@ The artifact uses complementary integrity layers.
    action refs fail the workflow audit.
 6. **Pinned container bootstrap.** The Dockerfile fetches the elan installer
    from a fixed commit and verifies its Git blob object ID before execution.
-7. **Source-tree manifest.** `MANIFEST.sha256` records every packaged source file
-   other than itself.
+7. **Audited source-tree manifest.** `MANIFEST.sha256` records every packaged
+   source file other than itself. Static and clean-room checks compare the
+   committed bytes with the current tree; manifest generation and ZIP assembly
+   use the same path-safe source inventory.
 8. **Deterministic archive.** ZIP timestamps, permissions, ordering, and root
    directory are normalized; CI requires two independent builds to match
    byte-for-byte.
-9. **Archive safety.** Verification rejects traversal, duplicate paths,
-   case-folding and Unicode collisions, symlinks, non-regular entries,
+9. **Archive safety.** Verification rejects traversal, duplicate or
+   non-canonical paths, file/directory conflicts, case-folding and Unicode
+   collisions, Windows-reserved components, symlinks, non-regular entries,
    encryption, oversized members, unexpected roots, unlisted members, and
    forbidden manuscript binaries.
 10. **Checksums and release index.** Per-file sidecars, an aggregate checksum
@@ -32,12 +35,15 @@ The artifact uses complementary integrity layers.
     CycloneDX 1.5 JSON for locked Lean packages, pinned documentation
     dependencies, and GitHub Actions build dependencies.
 12. **Build-information binding.** Deterministic JSON records the proof
-    environment, verification policy, and archive/SBOM digests.
-13. **Clean-room archive test.** The ZIP is safely extracted into a temporary
+    environment, declared verification entrypoints, and archive/SBOM digests.
+13. **Supervised process lifecycle.** Local Lean, clean-room, and deterministic
+    evidence subprocesses run in isolated process groups and are terminated as
+    a complete tree on timeout, interrupt, or parent loss.
+14. **Clean-room archive test.** The ZIP is safely extracted into a temporary
     directory and audited using only its own source tree.
-14. **Scheduled cold-cache verification.** A monthly workflow rebuilds Lean
+15. **Scheduled cold-cache verification.** A monthly workflow rebuilds Lean
     without the GitHub Lean cache and recreates the release evidence.
-15. **Hosted provenance.** Tagged releases request GitHub build-provenance
+16. **Hosted provenance.** Tagged releases request GitHub build-provenance
     attestations for the source archive and JSON evidence files.
 
 GitHub Actions and Python documentation packages are monitored by Dependabot.
@@ -61,3 +67,8 @@ dependencies bind the upstream proof commit, Mathlib commit, elan installer Git
 blob, Python lock digest, and GitHub Actions manifest digest. The statement is
 itself checksummed, indexed, rebuilt twice, and independently verified before
 release publication.
+
+This deterministic statement describes the reproducible source recipe; it sets
+`executionBound: false` and requires a hosted attestation. It therefore does not
+claim that the release workflow ran. The separate GitHub attestations on tagged
+artifacts provide that execution-bound evidence.

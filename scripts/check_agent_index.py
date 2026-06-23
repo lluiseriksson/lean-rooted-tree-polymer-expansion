@@ -24,6 +24,8 @@ def validate() -> list[str]:
         project['mathlib_commit'],
         *PUBLIC,
         'does not prove the model-specific raw Yang--Mills activity estimate',
+        'make verify-nonlean',
+        'scripts/run_lean_gate.py',
     ]
     return [f'llms.txt missing {needle!r}' for needle in needles if needle not in text]
 
