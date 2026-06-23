@@ -1,5 +1,12 @@
 # Novelty and scope
 
+## Archival status
+
+This repository is closed at `v2.4.3`. It is preserved as a reproducible Lean 4
+artifact, not as an active claim of independent new mathematical theory. The
+standalone v2.4.2 PDF/LaTeX export bundle is historical; the canonical source
+remains the integrated `docs/paper/` tree and the verified release evidence.
+
 ## Claim made
 
 The artifact gives a machine-checked, end-to-end implementation of a finite
@@ -19,6 +26,10 @@ expansion sources and recent Lean formalizations of quantum field theory, but no
 prior public Lean artifact for this specific target-preserving Appendix-F leaf
 summation pipeline. The wording remains **to the best of our knowledge**; no
 universal priority claim is made.
+
+This is intentionally a scoped artifact claim. It should not be cited as a
+claim that the underlying classical combinatorics or polymer-expansion strategy
+is new.
 
 ## Inherited mathematics
 

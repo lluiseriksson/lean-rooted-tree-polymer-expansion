@@ -2,6 +2,12 @@
 
 **Machine-checked target-preserving Ursell leaf summation for polymer systems with holes.**
 
+> **Archived final state.** This repository is closed as a reproducible Lean 4
+> proof artifact. The terminal published release is `v2.4.3`. It should not be
+> read as an active claim of independent new mathematical theory; its value is
+> the scoped machine-checked assembly, provenance, and verification record.
+> See [`ARCHIVAL_NOTICE.md`](ARCHIVAL_NOTICE.md).
+
 [![Lean verification](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/actions/workflows/ci.yml/badge.svg)](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/actions/workflows/ci.yml)
 [![Documentation](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/actions/workflows/pages.yml/badge.svg)](https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/)
 [![Release](https://img.shields.io/github/v/release/lluiseriksson/lean-rooted-tree-polymer-expansion)](https://github.com/lluiseriksson/lean-rooted-tree-polymer-expansion/releases)
@@ -69,6 +75,9 @@ geometric composition. It does **not** prove the model-specific raw
 Yang--Mills activity estimate, `hRpoly`, a continuum construction,
 Osterwalder--Schrader reconstruction, or a continuum mass gap. The full claims
 boundary is maintained in [`docs/artifact/scope.md`](docs/artifact/scope.md).
+No claim of independent novelty is made for the classical tree-graph or
+combinatorial ingredients beyond their audited Lean assembly in this fixed
+artifact.
 
 ## Verification
 
@@ -163,6 +172,10 @@ site build, [`scripts/assemble_paper.py`](scripts/assemble_paper.py) creates a
 single continuous HTML article from the same canonical section sources. Readers
 can therefore use sectional navigation or one-page reading without introducing
 a second manuscript source.
+
+The standalone v2.4.2 PDF/LaTeX bundle is a historical typeset export. It does
+not replace the integrated article, theorem manifest, CI logs, or deterministic
+release evidence in `v2.4.3`.
 
 ## Citation and licensing
 

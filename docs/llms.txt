@@ -6,6 +6,7 @@ Canonical repository: https://github.com/lluiseriksson/lean-rooted-tree-polymer-
 Documentation: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/
 Integrated article: https://lluiseriksson.github.io/lean-rooted-tree-polymer-expansion/paper/
 Version: 2.4.3
+Repository status: archived final artifact; no further roadmap or active paper submission is planned.
 
 ## Public Lean endpoints
 
@@ -22,6 +23,7 @@ Version: 2.4.3
 ## Claims boundary
 
 This artifact proves finite rooted-tree combinatorics and target-sensitive geometric composition. It does not prove the model-specific raw Yang--Mills activity estimate, hRpoly, a continuum limit, Osterwalder--Schrader reconstruction, or a mass gap.
+It should not be summarized as a claim of independent new mathematical theory beyond the scoped Lean formalization and reproducibility record.
 
 ## High-value files
 

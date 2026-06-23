@@ -2,6 +2,10 @@
 
 The central publication claim is deliberately narrow.
 
+The repository is now closed as an archival proof artifact. No active claim is
+made that the manuscript contains independent mathematical novelty beyond the
+scoped Lean formalization, proof decomposition, and reproducibility record.
+
 ## Kernel-checked claims
 
 The Lean companion exposes three theorems:
@@ -54,3 +58,5 @@ claims boundary prevents an abstract interface, a finite-volume estimate, or a
 conditional consumer theorem from being presented as a physical construction.
 The boundary is repeated in the README, article, theorem manifest, evaluator
 guide, and release metadata so it survives citation outside the repository.
+The same boundary also prevents the artifact from being read as a broader
+publication claim after archival.
