@@ -203,6 +203,8 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append(f'release publish job missing exact asset path: {needle}')
     if 'GH_TOKEN: ${{ github.token }}' not in publish_job:
         errors.append('release publish token must be scoped to the publication step')
+    if '--repo "$GITHUB_REPOSITORY"' not in publish_job:
+        errors.append('release publish job must pass --repo because it has no checkout')
     if '--verify-tag' not in publish_job:
         errors.append('release.yml must verify the release tag')
     if 'name: scheduled-release-evidence' not in maintenance or 'path: release/' not in maintenance:

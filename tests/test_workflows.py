@@ -201,6 +201,23 @@ class WorkflowAuditTests(unittest.TestCase):
                 any("bind release-index metadata" in error for error in validate(copy))
             )
 
+    def test_release_publish_job_must_pass_explicit_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = self._copy_repo(tmp)
+            path = copy / ".github" / "workflows" / "release.yml"
+            text = path.read_text(encoding="utf-8")
+            path.write_text(
+                text.replace(
+                    '            --repo "$GITHUB_REPOSITORY" \\\n',
+                    '',
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            self.assertTrue(
+                any("must pass --repo" in error for error in validate(copy))
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -212,4 +212,5 @@ jobs:
             "release/${RELEASE_STEM}.checksums.sha256"
           )
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
             --verify-tag --generate-notes
